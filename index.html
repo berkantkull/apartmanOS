@@ -20,13 +20,13 @@
         <span>apartman<span>OS</span></span>
       </a>
       <div class="site-switcher">
-        <span class="site-avatar">Y</span>
-        <div><strong>Yaşam Sitesi</strong><small>A Blok · 24 daire</small></div>
+        <span class="site-avatar" id="siteInitial">Y</span>
+        <div><strong id="siteName">Yaşam Sitesi</strong><small id="siteSummary">A Blok · 24 daire</small></div>
         <button aria-label="Site değiştir">⌄</button>
       </div>
       <nav class="nav-list">
         <button class="nav-item active" data-page="dashboard"><span>⌂</span>Genel Bakış</button>
-        <button class="nav-item" data-page="dues"><span>₺</span>Aidat &amp; Borçlar <b>5</b></button>
+        <button class="nav-item" data-page="dues"><span>₺</span>Aidat &amp; Borçlar <b id="debtCount">0</b></button>
         <button class="nav-item" data-page="expenses"><span>↗</span>Giderler</button>
         <button class="nav-item" data-page="announcements"><span>◌</span>Duyurular</button>
         <button class="nav-item" data-page="decisions"><span>✓</span>Karar Defteri</button>
@@ -44,7 +44,7 @@
         <div class="topbar-title"><small>22 Eylül 2026, Salı</small><strong id="pageTitle">Genel Bakış</strong></div>
         <div class="topbar-actions">
           <button class="icon-button" aria-label="Bildirimler">♢<span></span></button>
-          <button class="profile-button"><span>BK</span><div><strong>Berkant Kul</strong><small>Yönetici</small></div><i>⌄</i></button>
+          <button class="profile-button"><span id="profileInitials">BK</span><div><strong id="managerName">Berkant Kul</strong><small>Yönetici</small></div><i>⌄</i></button>
         </div>
       </header>
 
@@ -54,9 +54,28 @@
 
   <dialog id="actionDialog">
     <form method="dialog" id="actionForm">
-      <div class="dialog-head"><div><span class="eyebrow">YENİ KAYIT</span><h2 id="dialogTitle">Kayıt ekle</h2></div><button value="cancel" class="close-button" aria-label="Kapat">×</button></div>
+      <div class="dialog-head"><div><span class="eyebrow">YENİ KAYIT</span><h2 id="dialogTitle">Kayıt ekle</h2></div><button type="button" class="close-button dialog-cancel" aria-label="Kapat">×</button></div>
       <div id="dialogFields"></div>
-      <div class="dialog-actions"><button value="cancel" class="button secondary">Vazgeç</button><button value="default" id="saveButton" class="button primary">Kaydet</button></div>
+      <div class="dialog-actions"><button type="button" class="button secondary dialog-cancel">Vazgeç</button><button type="submit" id="saveButton" class="button primary">Kaydet</button></div>
+    </form>
+  </dialog>
+  <dialog id="onboardingDialog" class="onboarding-dialog">
+    <form id="onboardingForm">
+      <div class="onboarding-brand"><span class="brand-mark" aria-hidden="true"><span></span><i></i></span><strong>apartman<span>OS</span></strong></div>
+      <span class="eyebrow">HOŞ GELDİNİZ</span>
+      <h2>Yönetiminizi birkaç dakikada kurun</h2>
+      <p class="onboarding-copy">Her apartman veya site kendi özel çalışma alanına sahip olur. Bilgileri daha sonra Ayarlar’dan değiştirebilirsiniz.</p>
+      <div class="onboarding-grid">
+        <div class="field"><label>Site / apartman adı</label><input name="siteName" required placeholder="Örn. Güneş Apartmanı" /></div>
+        <div class="field"><label>Yönetici adı</label><input name="managerName" required placeholder="Adınız soyadınız" /></div>
+        <div class="field"><label>Blok sayısı</label><input name="blockCount" type="number" min="1" max="20" value="1" required /></div>
+        <div class="field"><label>Toplam daire</label><input name="unitCount" type="number" min="1" max="500" value="12" required /></div>
+        <div class="field"><label>Aylık aidat</label><input name="monthlyDue" type="number" min="0" value="1000" required /></div>
+        <div class="field"><label>Yönetim dönemi</label><select name="period"><option>2026</option><option>2026–2027</option></select></div>
+      </div>
+      <label class="demo-choice"><input type="checkbox" name="sampleData" /> Örnek verilerle başla <small>(arayüzü denemek için)</small></label>
+      <div class="setup-note"><strong>Sonraki adım:</strong> Kurulumdan sonra Sakinler bölümünden daireleri düzenleyebilir, aidat ve duyuru ekleyebilirsiniz.</div>
+      <button type="submit" class="button primary onboarding-submit">Yönetim alanımı oluştur →</button>
     </form>
   </dialog>
   <div class="toast" id="toast" role="status"></div>

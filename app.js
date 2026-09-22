@@ -22,7 +22,8 @@ const baseData = {
   ]
 };
 
-const state = JSON.parse(localStorage.getItem('apartmanOS-data') || 'null') || structuredClone(baseData);
+let profile = JSON.parse(localStorage.getItem('apartmanOS-profile') || 'null');
+let state = JSON.parse(localStorage.getItem('apartmanOS-data') || 'null') || structuredClone(baseData);
 const titles = {dashboard:'Genel Bakış',dues:'Aidat & Borçlar',expenses:'Giderler',announcements:'Duyurular',decisions:'Karar Defteri',residents:'Sakinler',settings:'Ayarlar'};
 const pageContent = document.querySelector('#pageContent');
 const pageTitle = document.querySelector('#pageTitle');
@@ -32,19 +33,37 @@ let currentPage = 'dashboard';
 
 function money(value){return new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY',maximumFractionDigits:0}).format(value)}
 function persist(){localStorage.setItem('apartmanOS-data',JSON.stringify(state))}
+function persistProfile(){localStorage.setItem('apartmanOS-profile',JSON.stringify(profile))}
+function initials(name=''){return name.split(/\s+/).filter(Boolean).map(x=>x[0]).join('').slice(0,2).toLocaleUpperCase('tr') || 'OS'}
+function syncIdentity(){
+  if(!profile)return;
+  document.querySelector('#siteName').textContent=profile.siteName;
+  document.querySelector('#siteInitial').textContent=profile.siteName[0].toLocaleUpperCase('tr');
+  document.querySelector('#siteSummary').textContent=`${profile.blockCount} blok · ${profile.unitCount} daire`;
+  document.querySelector('#managerName').textContent=profile.managerName;
+  document.querySelector('#profileInitials').textContent=initials(profile.managerName);
+}
 function toast(message){const el=document.querySelector('#toast');el.textContent=message;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2400)}
 
 function dashboard(){
-  return `<section class="welcome-row"><div><h1>Günaydın, Berkant 👋</h1><p>Yaşam Sitesi’nde bugün bilmeniz gerekenler burada.</p></div><div class="quick-actions"><button class="button secondary" data-action="announcement">＋ Duyuru yap</button><button class="button primary" data-action="expense">＋ Gider ekle</button></div></section>
+  const firstName=(profile?.managerName||'Yönetici').split(' ')[0];
+  const community=profile?.siteName||'Apartmanınız';
+  const paidItems=state.dues.filter(x=>x.status==='paid');
+  const debtItems=state.dues.filter(x=>x.status!=='paid');
+  const collected=paidItems.reduce((sum,x)=>sum+x.amount,0);
+  const debt=debtItems.reduce((sum,x)=>sum+x.amount,0);
+  const expenseTotal=state.expenses.reduce((sum,x)=>sum+x.amount,0);
+  const rate=state.dues.length?Math.round((paidItems.length/state.dues.length)*100):0;
+  return `<section class="welcome-row"><div><h1>Günaydın, ${firstName} 👋</h1><p>${community} için bugün bilmeniz gerekenler burada.</p></div><div class="quick-actions"><button class="button secondary" data-action="announcement">＋ Duyuru yap</button><button class="button primary" data-action="expense">＋ Gider ekle</button></div></section>
   <section class="stats-grid">
-    <article class="stat-card"><div class="stat-head"><small>Toplanan aidat</small><span class="stat-icon">₺</span></div><h3>₺35.150</h3><span class="trend">↑ %8 geçen aya göre</span></article>
-    <article class="stat-card"><div class="stat-head"><small>Toplam borç</small><span class="stat-icon">!</span></div><h3>₺9.250</h3><span class="trend down">5 dairenin borcu var</span></article>
-    <article class="stat-card"><div class="stat-head"><small>Bu ayki gider</small><span class="stat-icon">↗</span></div><h3>₺21.840</h3><span class="trend down">↑ %4 geçen aya göre</span></article>
-    <article class="stat-card"><div class="stat-head"><small>Güncel kasa</small><span class="stat-icon">▣</span></div><h3>₺48.760</h3><span class="trend">Kasa durumu iyi</span></article>
+    <article class="stat-card"><div class="stat-head"><small>Toplanan aidat</small><span class="stat-icon">₺</span></div><h3>${money(collected)}</h3><span class="trend">${paidItems.length} ödeme tamamlandı</span></article>
+    <article class="stat-card"><div class="stat-head"><small>Toplam borç</small><span class="stat-icon">!</span></div><h3>${money(debt)}</h3><span class="trend down">${debtItems.length} dairenin borcu var</span></article>
+    <article class="stat-card"><div class="stat-head"><small>Bu ayki gider</small><span class="stat-icon">↗</span></div><h3>${money(expenseTotal)}</h3><span class="trend down">${state.expenses.length} gider kaydı</span></article>
+    <article class="stat-card"><div class="stat-head"><small>Güncel kasa</small><span class="stat-icon">▣</span></div><h3>${money(collected-expenseTotal)}</h3><span class="trend">Tahmini bakiye</span></article>
   </section>
   <section class="dashboard-grid">
     <article class="panel"><div class="panel-head"><h2>Gelir &amp; gider özeti</h2><button class="text-button">Son 6 ay ⌄</button></div><div class="chart-area"><div class="chart-y"><span>40B</span><span>30B</span><span>20B</span><span>10B</span><span>0</span></div><div class="chart-main"><div class="chart-bars">${[['Nis',62,45],['May',73,51],['Haz',67,48],['Tem',81,56],['Ağu',76,52],['Eyl',88,55]].map(x=>`<div class="bar-group"><i class="bar" style="height:${x[1]}%"></i><i class="bar expense" style="height:${x[2]}%"></i><span class="bar-label">${x[0]}</span></div>`).join('')}</div></div></div><div class="chart-legend"><span>Gelir</span><span>Gider</span></div></article>
-    <article class="panel"><div class="panel-head"><h2>Eylül aidat durumu</h2><button class="text-button" data-page-link="dues">Detaylar →</button></div><div class="progress-ring"><div><strong>%79</strong><small>Tahsilat oranı</small></div></div><div class="collection-list"><div class="collection-row"><span>Ödeyen daire</span><strong>19 / 24</strong></div><div class="collection-row"><span>Toplanan</span><strong>₺35.150</strong></div><div class="collection-row"><span>Beklenen</span><strong>₺9.250</strong></div></div></article>
+    <article class="panel"><div class="panel-head"><h2>Eylül aidat durumu</h2><button class="text-button" data-page-link="dues">Detaylar →</button></div><div class="progress-ring" style="--value:${rate}"><div><strong>%${rate}</strong><small>Tahsilat oranı</small></div></div><div class="collection-list"><div class="collection-row"><span>Ödeyen daire</span><strong>${paidItems.length} / ${state.dues.length}</strong></div><div class="collection-row"><span>Toplanan</span><strong>${money(collected)}</strong></div><div class="collection-row"><span>Beklenen</span><strong>${money(debt)}</strong></div></div></article>
     <article class="panel"><div class="panel-head"><h2>Son duyurular</h2><button class="text-button" data-page-link="announcements">Tümünü gör →</button></div><div class="announcements-list">${state.announcements.slice(0,2).map(a=>`<div class="announcement"><div class="date-box"><strong>${a.date.split(' ')[0]}</strong><small>${a.date.split(' ')[1]||'EYL'}</small></div><div><h3>${a.title}</h3><p>${a.text}</p></div></div>`).join('')}</div></article>
     <article class="panel"><div class="panel-head"><h2>Yaklaşan işler</h2><button class="text-button">Takvim →</button></div><div class="announcements-list"><div class="announcement"><div class="date-box"><strong>25</strong><small>EYL</small></div><div><h3>Asansör periyodik kontrolü</h3><p>10.00 · A ve B Blok</p></div></div><div class="announcement"><div class="date-box"><strong>01</strong><small>EKİ</small></div><div><h3>Yeni dönem aidat bildirimi</h3><p>Tüm dairelere otomatik bildirim</p></div></div></div></article>
   </section>`;
@@ -57,28 +76,48 @@ function announcements(){return listPage('Duyurular','Tüm sakinlerin haberdar o
 function decisions(){return listPage('Karar Defteri','Yönetim kararlarını tarih ve karar numarasıyla kayıt altında tutun.','decision','Karar ekle',state.decisions.map(x=>card(x)).join(''))}
 function card(x){return `<article class="content-card"><div class="meta"><span class="badge paid">${x.tag}</span><span>${x.date}</span></div><h3>${x.title}</h3><p>${x.text}</p><footer><span>Yaşam Sitesi Yönetimi</span><button class="text-button">Aç →</button></footer></article>`}
 function listPage(title,subtitle,action,label,content){return `<section class="section-heading"><div><h1>${title}</h1><p>${subtitle}</p></div><button class="button primary" data-action="${action}">＋ ${label}</button></section><section class="cards-list">${content}</section>`}
-function residents(){return `<section class="section-heading"><div><h1>Sakinler</h1><p>24 daireye ait güncel iletişim ve oturum bilgileri.</p></div><button class="button primary">＋ Sakin ekle</button></section><section class="data-panel"><div class="toolbar"><label class="search"><span>⌕</span><input placeholder="Sakin veya daire ara" /></label><button class="button secondary">Tüm bloklar ⌄</button></div><div class="table-wrap"><table><thead><tr><th>SAKİN</th><th>TELEFON</th><th>OTURUM</th><th>AİDAT DURUMU</th></tr></thead><tbody>${state.dues.map(d=>`<tr><td><div class="person"><span class="avatar">${d.initials}</span><div><strong>${d.name}</strong><small>${d.unit}</small></div></div></td><td>05•• ••• •• ••</td><td>Ev sahibi</td><td><span class="badge ${d.status}">${d.status==='paid'?'Borcu yok':'Borcu var'}</span></td></tr>`).join('')}</tbody></table></div></section>`}
-function settings(){return `<section class="section-heading"><div><h1>Ayarlar</h1><p>Site bilgilerini ve yönetim tercihlerini düzenleyin.</p></div></section><section class="data-panel empty-state"><span>⚙</span><h2>Yönetim ayarları</h2><p>Bildirim, yetki ve site bilgileri sonraki sürümde burada yönetilecek.</p></section>`}
+function residents(){return `<section class="section-heading"><div><h1>Sakinler</h1><p>${profile?.unitCount||0} daireye ait güncel iletişim ve oturum bilgileri.</p></div><button class="button primary" data-action="resident">＋ Sakin ekle</button></section><section class="data-panel"><div class="toolbar"><label class="search"><span>⌕</span><input placeholder="Sakin veya daire ara" /></label><button class="button secondary">Tüm bloklar ⌄</button></div>${state.dues.length?`<div class="table-wrap"><table><thead><tr><th>SAKİN</th><th>TELEFON</th><th>OTURUM</th><th>AİDAT DURUMU</th></tr></thead><tbody>${state.dues.map(d=>`<tr><td><div class="person"><span class="avatar">${d.initials}</span><div><strong>${d.name}</strong><small>${d.unit}</small></div></div></td><td>${d.phone||'—'}</td><td>${d.occupancy||'Ev sahibi'}</td><td><span class="badge ${d.status}">${d.status==='paid'?'Borcu yok':'Borcu var'}</span></td></tr>`).join('')}</tbody></table></div>`:`<div class="empty-state"><span>♙</span><h2>Henüz sakin eklenmedi</h2><p>İlk daire ve sakin kaydını “Sakin ekle” düğmesiyle oluşturun.</p></div>`}</section>`}
+function settings(){return `<section class="section-heading"><div><h1>Ayarlar</h1><p>Yönetim alanınızı kendi apartmanınıza göre düzenleyin.</p></div></section>
+  <section class="settings-grid">
+    <form class="panel settings-form" id="settingsForm"><div class="panel-head"><h2>Site bilgileri</h2><span class="badge paid">Aktif</span></div>
+      <div class="field"><label>Site / apartman adı</label><input name="siteName" required value="${profile?.siteName||''}" /></div>
+      <div class="field"><label>Yönetici adı</label><input name="managerName" required value="${profile?.managerName||''}" /></div>
+      <div class="form-row"><div class="field"><label>Blok sayısı</label><input name="blockCount" type="number" min="1" value="${profile?.blockCount||1}" /></div><div class="field"><label>Daire sayısı</label><input name="unitCount" type="number" min="1" value="${profile?.unitCount||12}" /></div></div>
+      <div class="field"><label>Aylık aidat</label><input name="monthlyDue" type="number" min="0" value="${profile?.monthlyDue||0}" /></div>
+      <button class="button primary" type="submit">Değişiklikleri kaydet</button>
+    </form>
+    <div class="panel getting-started"><div class="panel-head"><h2>Nasıl kullanılır?</h2><span class="eyebrow">3 ADIM</span></div>
+      <ol><li><span>1</span><div><strong>Sakinleri ekleyin</strong><p>Sakinler bölümünde daire ve kişi bilgilerini oluşturun.</p></div></li><li><span>2</span><div><strong>Aidatları takip edin</strong><p>Aidat kaydı ekleyin, ödeme geldiğinde “Ödendi” yapın.</p></div></li><li><span>3</span><div><strong>Yönetimi paylaşın</strong><p>Giderleri, duyuruları ve alınan kararları düzenli kaydedin.</p></div></li></ol>
+      <div class="setup-note"><strong>Bilgi:</strong> Bu beta sürümündeki veriler şu anda kullandığınız tarayıcıda saklanır.</div>
+    </div>
+  </section>`}
 
 const renderers={dashboard,dues,expenses,announcements,decisions,residents,settings};
-function render(page=currentPage){currentPage=page;pageTitle.textContent=titles[page];pageContent.innerHTML=renderers[page]();document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));document.querySelector('#sidebar').classList.remove('open');document.querySelector('#menuToggle').setAttribute('aria-expanded','false');bindPage()}
+function render(page=currentPage){currentPage=page;pageTitle.textContent=titles[page];pageContent.innerHTML=renderers[page]();document.querySelector('#debtCount').textContent=state.dues.filter(x=>x.status!=='paid').length;document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));document.querySelector('#sidebar').classList.remove('open');document.querySelector('#menuToggle').setAttribute('aria-expanded','false');bindPage()}
 
 function bindPage(){
   document.querySelectorAll('[data-action]').forEach(b=>b.addEventListener('click',()=>openDialog(b.dataset.action)));
   document.querySelectorAll('[data-page-link]').forEach(b=>b.addEventListener('click',()=>render(b.dataset.pageLink)));
   document.querySelectorAll('[data-pay]').forEach(b=>b.addEventListener('click',()=>{const d=state.dues[+b.dataset.pay];d.status='paid';d.label='Ödendi';persist();render('dues');toast('Ödeme kaydı güncellendi.')}));
   const search=document.querySelector('#dueSearch');if(search)search.addEventListener('input',()=>{const q=search.value.toLocaleLowerCase('tr');document.querySelector('#dueRows').innerHTML=dueRows(state.dues.filter(d=>(d.name+' '+d.unit).toLocaleLowerCase('tr').includes(q)));bindPage()});
+  const settingsForm=document.querySelector('#settingsForm');if(settingsForm)settingsForm.addEventListener('submit',e=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.currentTarget));profile={...profile,...data,blockCount:+data.blockCount,unitCount:+data.unitCount,monthlyDue:+data.monthlyDue};persistProfile();syncIdentity();toast('Site bilgileriniz güncellendi.')});
 }
 
 const forms={
   expense:{title:'Gider ekle',html:`<div class="field"><label>Gider açıklaması</label><input name="title" required placeholder="Örn. Asansör bakımı" /></div><div class="field"><label>Kategori</label><select name="category"><option>Bakım</option><option>Fatura</option><option>Temizlik</option><option>Diğer</option></select></div><div class="field"><label>Tutar</label><input name="amount" type="number" min="1" required placeholder="0 ₺" /></div>`},
   announcement:{title:'Duyuru yap',html:`<div class="field"><label>Başlık</label><input name="title" required placeholder="Duyuru başlığı" /></div><div class="field"><label>Açıklama</label><textarea name="text" required placeholder="Sakinlerin bilmesi gerekenleri yazın"></textarea></div><div class="field"><label>Tür</label><select name="tag"><option>Bilgilendirme</option><option>Önemli</option><option>Toplantı</option></select></div>`},
   decision:{title:'Karar ekle',html:`<div class="field"><label>Karar başlığı</label><input name="title" required /></div><div class="field"><label>Karar metni</label><textarea name="text" required></textarea></div><div class="field"><label>Karar numarası</label><input name="tag" value="2026 / 19" required /></div>`},
-  due:{title:'Aidat kaydı ekle',html:`<div class="field"><label>Sakin adı</label><input name="name" required /></div><div class="field"><label>Daire</label><input name="unit" required placeholder="A Blok · Daire 1" /></div><div class="field"><label>Tutar</label><input name="amount" type="number" value="1850" required /></div>`}
+  due:{title:'Aidat kaydı ekle',html:`<div class="field"><label>Sakin adı</label><input name="name" required /></div><div class="field"><label>Daire</label><input name="unit" required placeholder="A Blok · Daire 1" /></div><div class="field"><label>Tutar</label><input name="amount" type="number" value="${profile?.monthlyDue||0}" required /></div>`},
+  resident:{title:'Sakin ekle',html:`<div class="field"><label>Ad soyad</label><input name="name" required /></div><div class="field"><label>Daire</label><input name="unit" required placeholder="A Blok · Daire 1" /></div><div class="field"><label>Telefon</label><input name="phone" type="tel" placeholder="05xx xxx xx xx" /></div><div class="field"><label>Oturum türü</label><select name="occupancy"><option>Ev sahibi</option><option>Kiracı</option></select></div>`}
 };
 function openDialog(type){const f=forms[type];dialog.dataset.type=type;document.querySelector('#dialogTitle').textContent=f.title;fields.innerHTML=f.html;dialog.showModal()}
-document.querySelector('#actionForm').addEventListener('submit',e=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.currentTarget));const type=dialog.dataset.type;const now='22 Eyl 2026';if(type==='expense')state.expenses.unshift({...data,amount:+data.amount,date:now});if(type==='announcement')state.announcements.unshift({...data,date:'22 Eyl'});if(type==='decision')state.decisions.unshift({...data,date:now});if(type==='due')state.dues.unshift({...data,amount:+data.amount,initials:data.name.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase(),status:'pending',label:'Bekliyor'});persist();dialog.close();render(type==='announcement'?'announcements':type==='decision'?'decisions':type==='expense'?'expenses':'dues');toast('Kayıt başarıyla eklendi.')});
+document.querySelector('#actionForm').addEventListener('submit',e=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.currentTarget));const type=dialog.dataset.type;const now='22 Eyl 2026';if(type==='expense')state.expenses.unshift({...data,amount:+data.amount,date:now});if(type==='announcement')state.announcements.unshift({...data,date:'22 Eyl'});if(type==='decision')state.decisions.unshift({...data,date:now});if(type==='due')state.dues.unshift({...data,amount:+data.amount,initials:initials(data.name),status:'pending',label:'Bekliyor'});if(type==='resident')state.dues.unshift({...data,amount:profile?.monthlyDue||0,initials:initials(data.name),status:'pending',label:'Bekliyor'});persist();dialog.close();render(type==='announcement'?'announcements':type==='decision'?'decisions':type==='expense'?'expenses':type==='resident'?'residents':'dues');toast('Kayıt başarıyla eklendi.')});
+document.querySelectorAll('.dialog-cancel').forEach(button=>button.addEventListener('click',()=>dialog.close()));
+document.querySelector('#onboardingForm').addEventListener('submit',e=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.currentTarget));profile={siteName:data.siteName.trim(),managerName:data.managerName.trim(),blockCount:+data.blockCount,unitCount:+data.unitCount,monthlyDue:+data.monthlyDue,period:data.period,createdAt:new Date().toISOString()};if(!data.sampleData){state={dues:[],expenses:[],announcements:[],decisions:[]};}persistProfile();persist();syncIdentity();document.querySelector('#onboardingDialog').close();render('dashboard');toast('Yönetim alanınız hazır. Hoş geldiniz!')});
 document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',()=>render(n.dataset.page)));
+document.querySelector('.help-card').addEventListener('click',()=>render('settings'));
 document.querySelector('#menuToggle').addEventListener('click',e=>{const open=document.querySelector('#sidebar').classList.toggle('open');e.currentTarget.setAttribute('aria-expanded',open)});
 document.addEventListener('click',e=>{if(innerWidth<=760&&!e.target.closest('.sidebar')&&!e.target.closest('#menuToggle'))document.querySelector('#sidebar').classList.remove('open')});
+syncIdentity();
 render();
+if(!profile)document.querySelector('#onboardingDialog').showModal();
