@@ -19,11 +19,11 @@
         <span class="brand-mark" aria-hidden="true"><span></span><i></i></span>
         <span>apartman<span>OS</span></span>
       </a>
-      <div class="site-switcher">
+      <button class="site-switcher" id="siteSwitcher" type="button" aria-label="Site ayarlarını aç">
         <span class="site-avatar" id="siteInitial">Y</span>
         <div><strong id="siteName">Yaşam Sitesi</strong><small id="siteSummary">A Blok · 24 daire</small></div>
-        <button aria-label="Site değiştir">⌄</button>
-      </div>
+        <span class="switcher-arrow">›</span>
+      </button>
       <nav class="nav-list">
         <button class="nav-item active" data-page="dashboard"><span>⌂</span>Genel Bakış</button>
         <button class="nav-item" data-page="dues"><span>₺</span>Aidat &amp; Borçlar <b id="debtCount">0</b></button>
@@ -41,10 +41,13 @@
     <main class="main-content">
       <header class="topbar">
         <button class="menu-toggle" id="menuToggle" aria-label="Menüyü aç" aria-expanded="false">☰</button>
-        <div class="topbar-title"><small>22 Eylül 2026, Salı</small><strong id="pageTitle">Genel Bakış</strong></div>
+        <div class="topbar-title"><small id="currentDate"></small><strong id="pageTitle">Genel Bakış</strong></div>
         <div class="topbar-actions">
-          <button class="icon-button" aria-label="Bildirimler">♢<span></span></button>
-          <button class="profile-button"><span id="profileInitials">BK</span><div><strong id="managerName">Berkant Kul</strong><small>Yönetici</small></div><i>⌄</i></button>
+          <button class="icon-button" id="notificationButton" aria-label="Bildirimleri aç">♢<span id="notificationDot"></span></button>
+          <div class="profile-wrap">
+            <button class="profile-button" id="profileButton" aria-expanded="false"><span id="profileInitials">BK</span><div><strong id="managerName">Berkant Kul</strong><small>Yönetici</small></div><i>⌄</i></button>
+            <div class="profile-menu" id="profileMenu" hidden><strong id="profileMenuName"></strong><small>Bu cihazdaki yönetim alanı</small><button data-profile-action="settings">⚙ Site ve profil ayarları</button><button data-profile-action="export">⇩ Verileri yedekle</button><button data-profile-action="guide">? Nasıl kullanılır?</button></div>
+          </div>
         </div>
       </header>
 
@@ -77,6 +80,9 @@
       <div class="setup-note"><strong>Sonraki adım:</strong> Kurulumdan sonra Sakinler bölümünden daireleri düzenleyebilir, aidat ve duyuru ekleyebilirsiniz.</div>
       <button type="submit" class="button primary onboarding-submit">Yönetim alanımı oluştur →</button>
     </form>
+  </dialog>
+  <dialog id="detailDialog" class="detail-dialog">
+    <div class="detail-shell"><div class="dialog-head"><div><span class="eyebrow" id="detailEyebrow">KAYIT</span><h2 id="detailTitle"></h2></div><button type="button" class="close-button" id="detailClose" aria-label="Kapat">×</button></div><div id="detailContent"></div><div class="dialog-actions"><button type="button" class="button danger" id="detailDelete">Kaydı sil</button><button type="button" class="button secondary" id="detailDone">Kapat</button></div></div>
   </dialog>
   <div class="toast" id="toast" role="status"></div>
   <script src="app.js"></script>
