@@ -5,6 +5,7 @@ import { Eye, EyeOff, LockKeyhole, Mail, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import LogoMark from "./logo-mark";
 
 export default function AuthPanel() {
   const [mode, setMode] = useState<"login"|"register">("login");
@@ -35,7 +36,7 @@ export default function AuthPanel() {
 
   return <main className="signin-page">
     <section className="signin-card auth-card">
-      <div className="setup-brand"><span>A</span><div><b>apartmanOS</b><small>Apartman ve site yönetimi</small></div></div>
+      <div className="setup-brand"><LogoMark className="setup-logo"/><div><b>apartmanOS</b><small>Apartman ve site yönetimi</small></div></div>
       <h1>{mode === "login" ? "Hesabınıza giriş yapın" : "Yeni hesabınızı oluşturun"}</h1>
       <p>{mode === "login" ? "Apartmanınıza ait aidat, gider ve duyurulara güvenle ulaşın." : "Hesabınızı oluşturduktan sonra apartman kurabilir veya davet koduyla katılabilirsiniz."}</p>
       <div className="setup-tabs" role="tablist" aria-label="Üyelik işlemleri">
