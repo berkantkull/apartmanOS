@@ -11,9 +11,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ google_error?: string }> }) {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ google_error?: string; davet?: string }> }) {
   const user = await getSessionUser();
   const query = await searchParams;
-  if (!user) return <AuthPanel initialError={query.google_error ? "Google ile giriş tamamlanamadı. Lütfen tekrar deneyin." : ""} />;
-  return <ApartmentApp user={{ displayName: user.displayName, email: user.email }} />;
+  if (!user) return <AuthPanel invite={query.davet || ""} initialError={query.google_error ? "Google ile giriş tamamlanamadı. Lütfen tekrar deneyin." : ""} />;
+  return <ApartmentApp user={{ displayName: user.displayName, email: user.email }} initialInvite={query.davet || ""} />;
 }

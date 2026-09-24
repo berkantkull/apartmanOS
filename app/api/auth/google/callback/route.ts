@@ -4,6 +4,7 @@ import { createSession, SESSION_COOKIE, SESSION_SECONDS } from "@/app/auth";
 import { getDatabase } from "@/db";
 
 const STATE_COOKIE = "apartmanos_google_state";
+const INVITE_COOKIE = "apartmanos_google_invite";
 const REDIRECT_URI = "https://apartmanos.com.tr/api/auth/google/callback";
 const LOGIN_URL = "https://apartmanos.com.tr/giris";
 
@@ -57,16 +58,19 @@ export async function GET(request: Request) {
 
   if (existing) {
     if (existing.google_sub && existing.google_sub !== profile.sub) return failed("account");
-    await db.prepare("UPDATE app_users SET google_sub = ?, display_name = ? WHERE id = ?")
+    await db.prepare("UPDATE app_users SET google_sub = ?, display_name = ?, email_verified = 1 WHERE id = ?")
       .bind(profile.sub, String(profile.name || email.split("@")[0]).slice(0, 80), existing.id).run();
   } else {
     userId = crypto.randomUUID();
-    await db.prepare("INSERT INTO app_users (id, email, display_name, password_hash, password_salt, google_sub, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
+    await db.prepare("INSERT INTO app_users (id, email, display_name, password_hash, password_salt, google_sub, email_verified, created_at) VALUES (?, ?, ?, ?, ?, ?, 1, ?)")
       .bind(userId, email, String(profile.name || email.split("@")[0]).slice(0, 80), "google-oauth", "google-oauth", profile.sub, new Date().toISOString()).run();
   }
 
   const session = await createSession(userId!);
-  const response = NextResponse.redirect(LOGIN_URL);
+  const invite = request.headers.get("cookie")?.match(/(?:^|;\s*)apartmanos_google_invite=([^;]+)/)?.[1];
+  const redirectUrl = new URL(LOGIN_URL);
+  if (invite) redirectUrl.searchParams.set("davet", decodeURIComponent(invite));
+  const response = NextResponse.redirect(redirectUrl);
   response.cookies.set(SESSION_COOKIE, session.token, {
     httpOnly: true,
     secure: true,
@@ -75,5 +79,6 @@ export async function GET(request: Request) {
     maxAge: SESSION_SECONDS,
   });
   response.cookies.set(STATE_COOKIE, "", { httpOnly: true, secure: true, sameSite: "lax", path: "/", maxAge: 0 });
+  response.cookies.set(INVITE_COOKIE, "", { httpOnly: true, secure: true, sameSite: "lax", path: "/", maxAge: 0 });
   return response;
 }

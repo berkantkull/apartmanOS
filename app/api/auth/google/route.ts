@@ -2,9 +2,10 @@ import { env } from "cloudflare:workers";
 import { NextResponse } from "next/server";
 
 const STATE_COOKIE = "apartmanos_google_state";
+const INVITE_COOKIE = "apartmanos_google_invite";
 const REDIRECT_URI = "https://apartmanos.com.tr/api/auth/google/callback";
 
-export async function GET() {
+export async function GET(request: Request) {
   if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) {
     return NextResponse.json({ error: "Google girişi henüz yapılandırılmadı." }, { status: 503 });
   }
@@ -26,5 +27,8 @@ export async function GET() {
     path: "/",
     maxAge: 10 * 60,
   });
+  const requestUrl = new URL(request.url);
+  const invite = String(requestUrl.searchParams.get("davet") || "").trim().slice(0, 100);
+  if (invite) response.cookies.set(INVITE_COOKIE, invite, { httpOnly: true, secure: true, sameSite: "lax", path: "/", maxAge: 600 });
   return response;
 }

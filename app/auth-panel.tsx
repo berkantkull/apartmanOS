@@ -1,13 +1,13 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { Eye, EyeOff, LockKeyhole, Mail, UserRound } from "lucide-react";
+import { Eye, EyeOff, LockKeyhole, Mail, Phone, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import LogoMark from "./logo-mark";
 
-export default function AuthPanel({ initialError = "" }: { initialError?: string }) {
+export default function AuthPanel({ initialError = "", invite = "" }: { initialError?: string; invite?: string }) {
   const [mode, setMode] = useState<"login"|"register">("login");
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -41,7 +41,8 @@ export default function AuthPanel({ initialError = "" }: { initialError?: string
       <div className="setup-brand"><LogoMark className="setup-logo"/><div><b>apartmanOS</b><small>Apartman ve site yönetimi</small></div></div>
       <h1>{mode === "login" ? "Hesabınıza giriş yapın" : "Yeni hesabınızı oluşturun"}</h1>
       <p>{mode === "login" ? "Apartmanınıza ait aidat, gider ve duyurulara güvenle ulaşın." : "Hesabınızı oluşturduktan sonra apartman kurabilir veya davet koduyla katılabilirsiniz."}</p>
-      <a className="google-auth-button" href="/api/auth/google">
+      {invite ? <p className="invite-welcome">Apartman davetiniz hazır. Giriş yaptıktan sonra daire bilgilerinizi tamamlayacaksınız.</p> : null}
+      <a className="google-auth-button" href={`/api/auth/google${invite ? `?davet=${encodeURIComponent(invite)}` : ""}`}>
         <span aria-hidden="true">G</span>
         Google ile devam et
       </a>
@@ -52,6 +53,7 @@ export default function AuthPanel({ initialError = "" }: { initialError?: string
       </div>
       <form onSubmit={submit} className="auth-form">
         {mode === "register" ? <div className="field-wrap auth-field"><Label htmlFor="displayName">Ad soyad</Label><div><UserRound/><Input id="displayName" name="displayName" autoComplete="name" minLength={2} maxLength={80} required placeholder="Adınız ve soyadınız"/></div></div> : null}
+        {mode === "register" ? <div className="field-wrap auth-field"><Label htmlFor="phone">Telefon numarası</Label><div><Phone/><Input id="phone" name="phone" type="tel" autoComplete="tel" minLength={10} maxLength={20} required placeholder="05xx xxx xx xx"/></div></div> : null}
         <div className="field-wrap auth-field"><Label htmlFor="email">E-posta adresi</Label><div><Mail/><Input id="email" name="email" type="email" autoComplete="email" maxLength={254} required placeholder="ornek@email.com"/></div></div>
         <div className="field-wrap auth-field"><Label htmlFor="password">Şifre</Label><div><LockKeyhole/><Input id="password" name="password" type={showPassword ? "text" : "password"} autoComplete={mode === "login" ? "current-password" : "new-password"} minLength={8} maxLength={128} required placeholder="En az 8 karakter"/><button type="button" className="password-toggle" onClick={()=>setShowPassword(value=>!value)} aria-label={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}>{showPassword ? <EyeOff/> : <Eye/>}</button></div></div>
         {error ? <p className="auth-error" role="alert">{error}</p> : null}

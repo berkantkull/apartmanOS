@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS app_users (
 );
 
 ALTER TABLE app_users ADD COLUMN IF NOT EXISTS google_sub TEXT;
+ALTER TABLE app_users ADD COLUMN IF NOT EXISTS phone TEXT;
+ALTER TABLE app_users ADD COLUMN IF NOT EXISTS email_verified INTEGER NOT NULL DEFAULT 0;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_app_users_google_sub ON app_users(google_sub) WHERE google_sub IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS sessions (
@@ -45,8 +47,42 @@ CREATE TABLE IF NOT EXISTS members (
   display_name TEXT NOT NULL,
   role TEXT NOT NULL DEFAULT 'resident' CHECK (role IN ('owner', 'manager', 'resident')),
   unit TEXT,
+  phone TEXT,
   joined_at TEXT NOT NULL,
   UNIQUE (community_id, user_id)
+);
+ALTER TABLE members ADD COLUMN IF NOT EXISTS phone TEXT;
+
+CREATE TABLE IF NOT EXISTS invitations (
+  id TEXT PRIMARY KEY,
+  community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+  email TEXT NOT NULL,
+  token TEXT NOT NULL UNIQUE,
+  unit TEXT,
+  phone TEXT,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'joined')),
+  invited_by TEXT NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT,
+  created_at TEXT NOT NULL,
+  accepted_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS notifications (
+  id TEXT PRIMARY KEY,
+  community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+  user_id TEXT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  kind TEXT NOT NULL DEFAULT 'announcement',
+  read_at TEXT,
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS auth_tokens (
+  token_hash TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+  kind TEXT NOT NULL CHECK (kind IN ('verify', 'reset')),
+  expires_at INTEGER NOT NULL,
+  created_at TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS residents (
@@ -109,3 +145,6 @@ CREATE INDEX IF NOT EXISTS idx_dues_community ON dues(community_id);
 CREATE INDEX IF NOT EXISTS idx_expenses_community ON expenses(community_id);
 CREATE INDEX IF NOT EXISTS idx_announcements_community ON announcements(community_id);
 CREATE INDEX IF NOT EXISTS idx_decisions_community ON decisions(community_id);
+CREATE INDEX IF NOT EXISTS idx_invitations_community ON invitations(community_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_auth_tokens_user ON auth_tokens(user_id, kind);

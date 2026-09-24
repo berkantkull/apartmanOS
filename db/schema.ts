@@ -4,6 +4,8 @@ export const appUsers = pgTable("app_users", {
   id: text("id").primaryKey(),
   email: text("email").notNull().unique(),
   displayName: text("display_name").notNull(),
+  phone: text("phone"),
+  emailVerified: integer("email_verified").notNull().default(0),
   passwordHash: text("password_hash").notNull(),
   passwordSalt: text("password_salt").notNull(),
   googleSub: text("google_sub").unique(),
@@ -43,6 +45,7 @@ export const members = pgTable("members", {
   displayName: text("display_name").notNull(),
   role: text("role", { enum: ["owner", "manager", "resident"] }).notNull().default("resident"),
   unit: text("unit"),
+  phone: text("phone"),
   joinedAt: text("joined_at").notNull(),
 }, table => [uniqueIndex("idx_members_community_user").on(table.communityId, table.userId)]);
 
@@ -53,6 +56,38 @@ export const residents = pgTable("residents", {
   unit: text("unit").notNull(),
   phone: text("phone"),
   occupancy: text("occupancy").notNull().default("Ev sahibi"),
+  createdAt: text("created_at").notNull(),
+});
+
+export const invitations = pgTable("invitations", {
+  id: text("id").primaryKey(),
+  communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
+  email: text("email").notNull(),
+  token: text("token").notNull().unique(),
+  unit: text("unit"),
+  phone: text("phone"),
+  status: text("status", { enum: ["pending", "joined"] }).notNull().default("pending"),
+  invitedBy: text("invited_by").notNull(),
+  createdAt: text("created_at").notNull(),
+  acceptedAt: text("accepted_at"),
+});
+
+export const notifications = pgTable("notifications", {
+  id: text("id").primaryKey(),
+  communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
+  userId: text("user_id").notNull().references(() => appUsers.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  body: text("body").notNull(),
+  kind: text("kind").notNull().default("announcement"),
+  readAt: text("read_at"),
+  createdAt: text("created_at").notNull(),
+});
+
+export const authTokens = pgTable("auth_tokens", {
+  tokenHash: text("token_hash").primaryKey(),
+  userId: text("user_id").notNull().references(() => appUsers.id, { onDelete: "cascade" }),
+  kind: text("kind", { enum: ["verify", "reset"] }).notNull(),
+  expiresAt: integer("expires_at").notNull(),
   createdAt: text("created_at").notNull(),
 });
 

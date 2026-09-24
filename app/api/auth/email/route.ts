@@ -46,13 +46,15 @@ export async function POST(request: Request) {
 
   if (action === "register") {
     const displayName = clean(body.displayName, 80);
+    const phone = clean(body.phone, 20);
     if (displayName.length < 2) return json({ error: "Ad soyad en az 2 karakter olmalı." }, 400);
+    if (phone.replace(/\D/g, "").length < 10) return json({ error: "Geçerli bir telefon numarası girin." }, 400);
     const exists = await db.prepare("SELECT id FROM app_users WHERE email = ?").bind(email).first();
     if (exists) return json({ error: "Bu e-posta adresiyle daha önce hesap açılmış." }, 409);
     const userId = crypto.randomUUID();
     const credentials = await hashPassword(password);
-    await db.prepare("INSERT INTO app_users (id, email, display_name, password_hash, password_salt, created_at) VALUES (?, ?, ?, ?, ?, ?)")
-      .bind(userId, email, displayName, credentials.hash, credentials.salt, new Date().toISOString()).run();
+    await db.prepare("INSERT INTO app_users (id, email, display_name, phone, password_hash, password_salt, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
+      .bind(userId, email, displayName, phone, credentials.hash, credentials.salt, new Date().toISOString()).run();
     const session = await createSession(userId);
     return setSessionCookie(request, json({ ok: true }, 201), session.token);
   }
