@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import {
   ArrowRight, BadgeTurkishLira, BellRing, BookOpenCheck, Building2,
-  CheckCircle2, CircleGauge, FileText, ShieldCheck, Sparkles,
+  CheckCircle2, CircleGauge, FileText, ShieldCheck,
   UsersRound, WalletCards,
 } from "lucide-react";
 import LogoMark from "./logo-mark";
@@ -75,7 +75,7 @@ export default function MarketingHome() {
 
       <section className="hero-section">
         <div className="hero-copy">
-          <p className="marketing-eyebrow"><Sparkles /> Apartman yönetiminin yeni ve sade hali</p>
+          <p className="marketing-eyebrow">Apartman yönetiminin yeni ve sade hali</p>
           <h1>Apartman ve site yönetimini <span>tek yerde</span> toplayın.</h1>
           <p className="hero-lead">Aidat, borç, gider, duyuru, karar defteri ve sakin yönetimi artık dağınık değil. apartmanOS ile herkesin anlayabileceği düzenli bir yönetim kurun.</p>
           <div className="hero-actions">
