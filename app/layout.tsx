@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import ScrollToTop from "./scroll-to-top";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://apartmanos.com.tr"),
@@ -29,7 +30,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        {children}
+        <ScrollToTop />
+      </body>
     </html>
   );
 }
