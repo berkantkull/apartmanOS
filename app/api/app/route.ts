@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSessionUser, sameOrigin } from "@/app/auth";
-import { getD1 } from "@/db";
+import { getDatabase } from "@/db";
 
 type Role = "owner" | "manager" | "resident";
 type Membership = { community_id: string; role: Role };
@@ -15,7 +15,7 @@ const inviteCode = () => Array.from(crypto.getRandomValues(new Uint8Array(7)), n
 async function context() {
   const user = await getSessionUser();
   if (!user) return { user: null, membership: null };
-  const membership = await getD1().prepare(
+  const membership = await getDatabase().prepare(
     "SELECT community_id, role FROM members WHERE user_id = ? ORDER BY joined_at LIMIT 1"
   ).bind(user.userId).first<Membership>();
   return { user, membership };
@@ -28,7 +28,7 @@ export async function GET() {
   if (!user) return fail("Oturum açmanız gerekiyor.", 401);
   if (!membership) return NextResponse.json({ user, membership: null });
 
-  const db = getD1();
+  const db = getDatabase();
   const communityId = membership.community_id;
   const managerView = canManage(membership.role);
   const communityQuery = managerView
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
   if (!body) return fail("Geçersiz istek.");
   const action = clean(body.action, 40);
-  const db = getD1();
+  const db = getDatabase();
 
   if (action === "createCommunity") {
     if (membership) return fail("Zaten bir yönetim alanına bağlısınız.", 409);

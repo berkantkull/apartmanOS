@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSession, destroySession, hashPassword, normalizeEmail, rateLimitKey, sameOrigin, SESSION_COOKIE, SESSION_SECONDS, validEmail, verifyPassword } from "@/app/auth";
-import { getD1 } from "@/db";
+import { getDatabase } from "@/db";
 
 type StoredUser = { id: string; email: string; display_name: string; password_hash: string; password_salt: string };
 
@@ -14,13 +14,13 @@ function setSessionCookie(request: Request, response: NextResponse, token: strin
 
 async function isBlocked(key: string) {
   const now = Math.floor(Date.now() / 1000);
-  const row = await getD1().prepare("SELECT attempts, reset_at FROM auth_limits WHERE key = ?").bind(key).first<{attempts:number;reset_at:number}>();
+  const row = await getDatabase().prepare("SELECT attempts, reset_at FROM auth_limits WHERE key = ?").bind(key).first<{attempts:number;reset_at:number}>();
   return !!row && row.reset_at > now && row.attempts >= 6;
 }
 
 async function recordFailure(key: string) {
   const now = Math.floor(Date.now() / 1000), resetAt = now + 15 * 60;
-  await getD1().prepare(`INSERT INTO auth_limits (key, attempts, reset_at) VALUES (?, 1, ?)
+  await getDatabase().prepare(`INSERT INTO auth_limits (key, attempts, reset_at) VALUES (?, 1, ?)
     ON CONFLICT(key) DO UPDATE SET attempts = CASE WHEN reset_at <= ? THEN 1 ELSE attempts + 1 END,
     reset_at = CASE WHEN reset_at <= ? THEN ? ELSE reset_at END`).bind(key, resetAt, now, now, resetAt).run();
 }
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
   if (!body) return json({ error: "Geçersiz istek." }, 400);
   const action = clean(body.action, 20);
-  const db = getD1();
+  const db = getDatabase();
 
   if (action === "logout") {
     const token = request.headers.get("cookie")?.match(/(?:^|;\s*)apartmanos_session=([^;]+)/)?.[1];

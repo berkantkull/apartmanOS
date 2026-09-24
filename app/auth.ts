@@ -1,6 +1,6 @@
 import "server-only";
 import { cookies } from "next/headers";
-import { getD1 } from "@/db";
+import { getDatabase } from "@/db";
 
 export type AppUser = { userId: string; email: string; displayName: string };
 
@@ -47,21 +47,21 @@ export async function createSession(userId: string) {
   const token = bytesToBase64Url(crypto.getRandomValues(new Uint8Array(32)));
   const tokenHash = await digest(token);
   const expiresAt = Math.floor(Date.now() / 1000) + SESSION_SECONDS;
-  await getD1().prepare("INSERT INTO sessions (token_hash, user_id, expires_at, created_at) VALUES (?, ?, ?, ?)")
+  await getDatabase().prepare("INSERT INTO sessions (token_hash, user_id, expires_at, created_at) VALUES (?, ?, ?, ?)")
     .bind(tokenHash, userId, expiresAt, new Date().toISOString()).run();
   return { token, expiresAt };
 }
 
 export async function destroySession(token: string | undefined) {
   if (!token) return;
-  await getD1().prepare("DELETE FROM sessions WHERE token_hash = ?").bind(await digest(token)).run();
+  await getDatabase().prepare("DELETE FROM sessions WHERE token_hash = ?").bind(await digest(token)).run();
 }
 
 export async function getSessionUser(): Promise<AppUser | null> {
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!token) return null;
   const now = Math.floor(Date.now() / 1000);
-  const user = await getD1().prepare(`SELECT u.id AS userId, u.email, u.display_name AS displayName
+  const user = await getDatabase().prepare(`SELECT u.id AS "userId", u.email, u.display_name AS "displayName"
     FROM sessions s JOIN app_users u ON u.id = s.user_id
     WHERE s.token_hash = ? AND s.expires_at > ?`).bind(await digest(token), now).first<AppUser>();
   return user ?? null;

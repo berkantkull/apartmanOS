@@ -1,6 +1,6 @@
-import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { integer, pgTable, text, uniqueIndex } from "drizzle-orm/pg-core";
 
-export const appUsers = sqliteTable("app_users", {
+export const appUsers = pgTable("app_users", {
   id: text("id").primaryKey(),
   email: text("email").notNull().unique(),
   displayName: text("display_name").notNull(),
@@ -9,20 +9,20 @@ export const appUsers = sqliteTable("app_users", {
   createdAt: text("created_at").notNull(),
 });
 
-export const sessions = sqliteTable("sessions", {
+export const sessions = pgTable("sessions", {
   tokenHash: text("token_hash").primaryKey(),
   userId: text("user_id").notNull().references(() => appUsers.id, { onDelete: "cascade" }),
   expiresAt: integer("expires_at").notNull(),
   createdAt: text("created_at").notNull(),
 }, table => [uniqueIndex("idx_sessions_token_user").on(table.tokenHash, table.userId)]);
 
-export const authLimits = sqliteTable("auth_limits", {
+export const authLimits = pgTable("auth_limits", {
   key: text("key").primaryKey(),
   attempts: integer("attempts").notNull().default(0),
   resetAt: integer("reset_at").notNull(),
 });
 
-export const communities = sqliteTable("communities", {
+export const communities = pgTable("communities", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   blockCount: integer("block_count").notNull().default(1),
@@ -34,7 +34,7 @@ export const communities = sqliteTable("communities", {
   createdAt: text("created_at").notNull(),
 });
 
-export const members = sqliteTable("members", {
+export const members = pgTable("members", {
   id: text("id").primaryKey(),
   communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
   userId: text("user_id").notNull(),
@@ -45,7 +45,7 @@ export const members = sqliteTable("members", {
   joinedAt: text("joined_at").notNull(),
 }, table => [uniqueIndex("idx_members_community_user").on(table.communityId, table.userId)]);
 
-export const residents = sqliteTable("residents", {
+export const residents = pgTable("residents", {
   id: text("id").primaryKey(),
   communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
@@ -55,7 +55,7 @@ export const residents = sqliteTable("residents", {
   createdAt: text("created_at").notNull(),
 });
 
-export const dues = sqliteTable("dues", {
+export const dues = pgTable("dues", {
   id: text("id").primaryKey(),
   communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
   residentName: text("resident_name").notNull(),
@@ -67,7 +67,7 @@ export const dues = sqliteTable("dues", {
   createdAt: text("created_at").notNull(),
 });
 
-export const expenses = sqliteTable("expenses", {
+export const expenses = pgTable("expenses", {
   id: text("id").primaryKey(),
   communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
@@ -79,7 +79,7 @@ export const expenses = sqliteTable("expenses", {
   createdAt: text("created_at").notNull(),
 });
 
-export const announcements = sqliteTable("announcements", {
+export const announcements = pgTable("announcements", {
   id: text("id").primaryKey(),
   communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
@@ -89,7 +89,7 @@ export const announcements = sqliteTable("announcements", {
   createdAt: text("created_at").notNull(),
 });
 
-export const decisions = sqliteTable("decisions", {
+export const decisions = pgTable("decisions", {
   id: text("id").primaryKey(),
   communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
