@@ -6,7 +6,7 @@ export type AppUser = { userId: string; email: string; displayName: string };
 
 export const SESSION_COOKIE = "apartmanos_session";
 export const SESSION_SECONDS = 60 * 60 * 24 * 30;
-const PASSWORD_ITERATIONS = 210_000;
+const PASSWORD_ITERATIONS = 100_000;
 
 const bytesToBase64Url = (bytes: Uint8Array) => {
   let binary = "";
