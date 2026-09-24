@@ -2,8 +2,15 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "apartmanOS — Apartman ve site yönetimi",
+  metadataBase: new URL("https://apartmanos.com.tr"),
+  title: { default: "apartmanOS | Apartman ve Site Yönetim Programı", template: "%s | apartmanOS" },
   description: "Aidat, gider, duyuru ve kararları apartmanınıza özel tek yerde yönetin.",
+  applicationName: "apartmanOS",
+  authors: [{ name: "Berkant Kul", url: "https://berkantkul.com.tr" }],
+  creator: "Berkant Kul",
+  publisher: "Stark Bilişim Hizmetleri",
+  category: "technology",
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

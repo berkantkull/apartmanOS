@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /giris
+
+Sitemap: https://apartmanos.com.tr/sitemap.xml
+Host: https://apartmanos.com.tr
