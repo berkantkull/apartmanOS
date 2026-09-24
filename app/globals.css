@@ -42,3 +42,10 @@
 @media(max-width:640px){.scroll-to-top{right:.8rem;bottom:.8rem;width:2.75rem;padding:0;justify-content:center}.scroll-to-top span{display:none}}
 @media(prefers-reduced-motion:reduce){.scroll-to-top{transition:none}.scroll-to-top.is-visible{transform:none}}
 @media print{.scroll-to-top{display:none!important}}
+
+/* Shared content rails: header and page content use the same horizontal bounds. */
+.app-header{display:block;padding:0}
+.app-header-inner{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:1440px;height:100%;margin:0 auto;padding:0 3%}
+.seo-hero,.seo-content{width:min(1180px,calc(100% - 3rem))}
+.seo-content>section>p,.seo-content>section>ol,.seo-faq details{max-width:920px}
+@media(max-width:640px){.app-header{padding:0}.app-header-inner{padding:0 .8rem}.seo-hero,.seo-content{width:min(100% - 2rem,1180px)}}
