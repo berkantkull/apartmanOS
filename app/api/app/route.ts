@@ -50,7 +50,26 @@ export async function GET() {
     db.prepare("SELECT id, title, body, decision_no, created_at FROM decisions WHERE community_id = ? ORDER BY created_at DESC").bind(communityId).all(),
   ]);
   if (!community) return fail("Apartman kaydı bulunamadı.", 404);
-  return NextResponse.json({ user, membership, community, members: members.results, residents: residents.results, dues: dues.results, expenses: expenses.results, announcements: announcements.results, decisions: decisions.results });
+  const manualResidents = residents.results.map(resident => ({ ...resident, source: "manual" as const }));
+  const accountResidents = members.results
+    .filter(member => member.role === "resident")
+    .filter(member => !manualResidents.some(resident =>
+      String(resident.name).toLocaleLowerCase("tr") === String(member.display_name).toLocaleLowerCase("tr")
+      && String(resident.unit ?? "") === String(member.unit ?? "")
+    ))
+    .map(member => ({
+      id: `member:${member.id}`,
+      name: member.display_name,
+      unit: member.unit || "Belirtilmedi",
+      phone: null,
+      occupancy: "Kayıtlı kullanıcı",
+      created_at: member.joined_at,
+      source: "member" as const,
+    }));
+  const visibleResidents = [...manualResidents, ...accountResidents]
+    .sort((left, right) => String(left.unit).localeCompare(String(right.unit), "tr", { numeric: true }));
+
+  return NextResponse.json({ user, membership, community, members: members.results, residents: visibleResidents, dues: dues.results, expenses: expenses.results, announcements: announcements.results, decisions: decisions.results });
 }
 
 export async function POST(request: Request) {
