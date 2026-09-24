@@ -10,6 +10,10 @@ export const metadata: Metadata = {
   creator: "Berkant Kul",
   publisher: "Stark Bilişim Hizmetleri",
   category: "technology",
+  keywords: [
+    "apartmanOS", "apartman yönetim programı", "site yönetim programı",
+    "aidat takip programı", "apartman aidat takibi", "apartman gider takibi",
+  ],
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
   icons: {
     icon: "/favicon.svg",

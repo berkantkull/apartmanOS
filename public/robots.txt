@@ -2,6 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /giris
+Disallow: /sifremi-unuttum
 
 Sitemap: https://apartmanos.com.tr/sitemap.xml
 Host: https://apartmanos.com.tr

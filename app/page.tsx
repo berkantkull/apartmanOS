@@ -42,8 +42,8 @@ const faqs = [
 const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
-    { "@type": "WebSite", "@id": `${siteUrl}/#website`, url: siteUrl, name: "apartmanOS", alternateName: "Apartman OS", inLanguage: "tr-TR" },
-    { "@type": "Organization", "@id": `${siteUrl}/#organization`, name: "Stark Bilişim Hizmetleri", url: siteUrl },
+    { "@type": "WebSite", "@id": `${siteUrl}/#website`, url: siteUrl, name: "apartmanOS", alternateName: "Apartman OS", inLanguage: "tr-TR", publisher: { "@id": `${siteUrl}/#organization` } },
+    { "@type": "Organization", "@id": `${siteUrl}/#organization`, name: "Stark Bilişim Hizmetleri", url: siteUrl, logo: `${siteUrl}/favicon.svg`, founder: { "@id": `${siteUrl}/#berkant-kul` }, sameAs: ["https://berkantkul.com.tr"] },
     { "@type": "Person", "@id": `${siteUrl}/#berkant-kul`, name: "Berkant Kul", url: "https://berkantkul.com.tr", affiliation: { "@id": `${siteUrl}/#organization` } },
     {
       "@type": "SoftwareApplication", "@id": `${siteUrl}/#software`, name: "apartmanOS", url: siteUrl,
@@ -69,7 +69,7 @@ export default function MarketingHome() {
           <LogoMark className="marketing-logo" />
           <span><strong>apartmanOS</strong><small>Apartman ve site yönetimi</small></span>
         </a>
-        <nav aria-label="Ana menü"><a href="#ozellikler">Özellikler</a><a href="#nasil-calisir">Nasıl çalışır?</a><a href="#hakkimizda">Hakkımızda</a></nav>
+        <nav aria-label="Ana menü"><a href="#ozellikler">Özellikler</a><a href="#nasil-calisir">Nasıl çalışır?</a><a href="/apartman-yonetim-programi">Rehber</a><a href="/hakkimizda">Hakkımızda</a></nav>
         <a className="header-login" href="/giris">Giriş yap <ArrowRight /></a>
       </header>
 
@@ -109,6 +109,7 @@ export default function MarketingHome() {
       <section className="marketing-section features-section" id="ozellikler">
         <div className="section-intro"><p className="marketing-eyebrow">İhtiyacınız olan her şey</p><h2>Yönetimin yükünü azaltan, şeffaflığı artıran araçlar.</h2><p>Karmaşık tabloları ve kaybolan mesajları geride bırakın. Günlük yönetim işlerini sade bir akışta tamamlayın.</p></div>
         <div className="feature-grid">{features.map(({ icon: Icon, title, text }) => <article key={title}><span><Icon /></span><h3>{title}</h3><p>{text}</p></article>)}</div>
+        <div className="seo-link-row" aria-label="apartmanOS rehberleri"><a href="/apartman-yonetim-programi">Apartman yönetim programı rehberi <ArrowRight /></a><a href="/aidat-takip-programi">Aidat takip programı rehberi <ArrowRight /></a></div>
       </section>
 
       <section className="marketing-section how-section" id="nasil-calisir">
@@ -129,7 +130,7 @@ export default function MarketingHome() {
 
       <section className="final-cta"><div><p className="marketing-eyebrow">Daha düzenli bir yönetim mümkün</p><h2>Apartmanınızı bugün dijitalleştirin.</h2><p>İlk hesabınızı oluşturun, topluluğunuzu kurun ve yönetim işlerini tek yerde toplamaya başlayın.</p></div><a className="marketing-primary light" href="/giris">Hesap oluştur <ArrowRight /></a></section>
 
-      <footer className="marketing-footer"><div className="marketing-brand"><LogoMark className="marketing-logo" /><span><strong>apartmanOS</strong><small>Apartman ve site yönetimi</small></span></div><p>© {new Date().getFullYear()} apartmanOS · Berkant Kul tarafından, Stark Bilişim Hizmetleri çatısı altında geliştirilmiştir.</p><a href="/giris">Giriş yap</a></footer>
+      <footer className="marketing-footer"><div className="marketing-brand"><LogoMark className="marketing-logo" /><span><strong>apartmanOS</strong><small>Apartman ve site yönetimi</small></span></div><p>© {new Date().getFullYear()} apartmanOS · Berkant Kul tarafından, Stark Bilişim Hizmetleri çatısı altında geliştirilmiştir.</p><div className="footer-links"><a href="/hakkimizda">Hakkımızda</a><a href="/apartman-yonetim-programi">Rehber</a><a href="/giris">Giriş yap</a></div></footer>
     </main>
   );
 }
