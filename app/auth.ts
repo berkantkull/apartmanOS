@@ -20,6 +20,10 @@ async function digest(value: string) {
   return bytesToBase64Url(new Uint8Array(await crypto.subtle.digest("SHA-256", textBytes(value))));
 }
 
+export async function hashToken(value: string) {
+  return digest(value);
+}
+
 export function normalizeEmail(value: unknown) {
   return String(value ?? "").trim().toLocaleLowerCase("en-US").slice(0, 254);
 }

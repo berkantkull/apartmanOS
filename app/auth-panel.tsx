@@ -56,6 +56,7 @@ export default function AuthPanel({ initialError = "", invite = "" }: { initialE
         {mode === "register" ? <div className="field-wrap auth-field"><Label htmlFor="phone">Telefon numarası</Label><div><Phone/><Input id="phone" name="phone" type="tel" autoComplete="tel" minLength={10} maxLength={20} required placeholder="05xx xxx xx xx"/></div></div> : null}
         <div className="field-wrap auth-field"><Label htmlFor="email">E-posta adresi</Label><div><Mail/><Input id="email" name="email" type="email" autoComplete="email" maxLength={254} required placeholder="ornek@email.com"/></div></div>
         <div className="field-wrap auth-field"><Label htmlFor="password">Şifre</Label><div><LockKeyhole/><Input id="password" name="password" type={showPassword ? "text" : "password"} autoComplete={mode === "login" ? "current-password" : "new-password"} minLength={8} maxLength={128} required placeholder="En az 8 karakter"/><button type="button" className="password-toggle" onClick={()=>setShowPassword(value=>!value)} aria-label={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}>{showPassword ? <EyeOff/> : <Eye/>}</button></div></div>
+        {mode === "login" ? <a className="forgot-password" href="/sifremi-unuttum">Şifremi unuttum</a> : null}
         {error ? <p className="auth-error" role="alert">{error}</p> : null}
         <Button className="w-full" disabled={busy}>{busy ? "Lütfen bekleyin…" : mode === "login" ? "Giriş yap" : "Hesap oluştur"}</Button>
       </form>
