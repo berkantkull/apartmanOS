@@ -16,8 +16,9 @@ export const metadata: Metadata = {
   ],
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
+    icon: [{ url: "/apartmanos-icon.png", type: "image/png" }],
+    shortcut: "/apartmanos-icon.png",
+    apple: "/apartmanos-icon.png",
   },
 };
 

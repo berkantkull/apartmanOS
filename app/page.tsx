@@ -43,7 +43,7 @@ const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
     { "@type": "WebSite", "@id": `${siteUrl}/#website`, url: siteUrl, name: "apartmanOS", alternateName: "Apartman OS", inLanguage: "tr-TR", publisher: { "@id": `${siteUrl}/#organization` } },
-    { "@type": "Organization", "@id": `${siteUrl}/#organization`, name: "Stark Bilişim Hizmetleri", url: siteUrl, logo: `${siteUrl}/favicon.svg`, founder: { "@id": `${siteUrl}/#berkant-kul` }, sameAs: ["https://berkantkul.com.tr"] },
+    { "@type": "Organization", "@id": `${siteUrl}/#organization`, name: "Stark Bilişim Hizmetleri", url: siteUrl, logo: `${siteUrl}/apartmanos-icon.png`, founder: { "@id": `${siteUrl}/#berkant-kul` }, sameAs: ["https://berkantkul.com.tr"] },
     { "@type": "Person", "@id": `${siteUrl}/#berkant-kul`, name: "Berkant Kul", url: "https://berkantkul.com.tr", affiliation: { "@id": `${siteUrl}/#organization` } },
     {
       "@type": "SoftwareApplication", "@id": `${siteUrl}/#software`, name: "apartmanOS", url: siteUrl,
