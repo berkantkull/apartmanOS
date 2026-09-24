@@ -19,7 +19,7 @@ export default function AuthPanel({ initialError = "" }: { initialError?: string
     setError("");
     const payload = { action: mode, ...Object.fromEntries(new FormData(event.currentTarget)) };
     try {
-      const response = await fetch("/api/auth", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
+      const response = await fetch("/api/auth/email", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
       const responseText = await response.text();
       let result: { error?: string } = {};
       try { result = responseText ? JSON.parse(responseText) : {}; } catch { /* Sunucu hatalarında anlaşılır varsayılan mesajı göster. */ }

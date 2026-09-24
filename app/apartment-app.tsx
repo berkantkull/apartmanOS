@@ -44,7 +44,7 @@ export default function ApartmentApp({user}:{user:User}){
 
   async function load(){setLoading(true);try{const response=await fetch("/api/app",{cache:"no-store"});const json=await response.json();if(!response.ok)throw new Error(json.error);setData(json)}catch(error){toast.error(error instanceof Error?error.message:"Veriler yüklenemedi.")}finally{setLoading(false)}}
   async function action(payload:Record<string,unknown>,success?:string){const response=await fetch("/api/app",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(payload)});const json=await response.json();if(!response.ok)throw new Error(json.error||"İşlem tamamlanamadı.");if(success)toast.success(success);await load()}
-  async function logout(){await fetch("/api/auth",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({action:"logout"})});window.location.reload()}
+  async function logout(){await fetch("/api/auth/email",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({action:"logout"})});window.location.reload()}
   useEffect(()=>{
     let active=true;
     fetch("/api/app",{cache:"no-store"})
