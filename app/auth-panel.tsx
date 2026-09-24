@@ -7,11 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import LogoMark from "./logo-mark";
 
-export default function AuthPanel() {
+export default function AuthPanel({ initialError = "" }: { initialError?: string }) {
   const [mode, setMode] = useState<"login"|"register">("login");
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(initialError);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -41,6 +41,11 @@ export default function AuthPanel() {
       <div className="setup-brand"><LogoMark className="setup-logo"/><div><b>apartmanOS</b><small>Apartman ve site yönetimi</small></div></div>
       <h1>{mode === "login" ? "Hesabınıza giriş yapın" : "Yeni hesabınızı oluşturun"}</h1>
       <p>{mode === "login" ? "Apartmanınıza ait aidat, gider ve duyurulara güvenle ulaşın." : "Hesabınızı oluşturduktan sonra apartman kurabilir veya davet koduyla katılabilirsiniz."}</p>
+      <a className="google-auth-button" href="/api/auth/google">
+        <span aria-hidden="true">G</span>
+        Google ile devam et
+      </a>
+      <div className="auth-separator"><span>veya e-posta ile</span></div>
       <div className="setup-tabs" role="tablist" aria-label="Üyelik işlemleri">
         <button type="button" role="tab" aria-selected={mode === "login"} className={mode === "login" ? "active" : ""} onClick={()=>changeMode("login")}>Giriş yap</button>
         <button type="button" role="tab" aria-selected={mode === "register"} className={mode === "register" ? "active" : ""} onClick={()=>changeMode("register")}>Yeni hesap</button>

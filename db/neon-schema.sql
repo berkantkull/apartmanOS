@@ -4,8 +4,12 @@ CREATE TABLE IF NOT EXISTS app_users (
   display_name TEXT NOT NULL,
   password_hash TEXT NOT NULL,
   password_salt TEXT NOT NULL,
+  google_sub TEXT UNIQUE,
   created_at TEXT NOT NULL
 );
+
+ALTER TABLE app_users ADD COLUMN IF NOT EXISTS google_sub TEXT;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_app_users_google_sub ON app_users(google_sub) WHERE google_sub IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS sessions (
   token_hash TEXT PRIMARY KEY,

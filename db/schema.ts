@@ -6,6 +6,7 @@ export const appUsers = pgTable("app_users", {
   displayName: text("display_name").notNull(),
   passwordHash: text("password_hash").notNull(),
   passwordSalt: text("password_salt").notNull(),
+  googleSub: text("google_sub").unique(),
   createdAt: text("created_at").notNull(),
 });
 
