@@ -8,7 +8,7 @@ export default function SeoPage({ eyebrow, title, lead, children, structuredData
     <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(structuredData)}} />
     <header className="marketing-header">
       <a className="marketing-brand" href="/" aria-label="apartmanOS ana sayfa"><LogoMark className="marketing-logo"/><span><strong>apartmanOS</strong><small>Apartman ve site yönetimi</small></span></a>
-      <nav aria-label="Ana menü"><a href="/">Ana sayfa</a><a href="/apartman-yonetim-programi">Apartman yönetimi</a><a href="/aidat-takip-programi">Aidat takibi</a><a href="/hakkimizda">Hakkımızda</a></nav>
+      <nav aria-label="Ana menü"><a href="/">Ana sayfa</a><a href="/apartman-yonetim-programi">Apartman yönetimi</a><a href="/aidat-takip-programi">Aidat takibi</a><a href="/blog">Blog</a><a href="/hakkimizda">Hakkımızda</a></nav>
       <a className="header-login" href="/giris">Giriş yap <ArrowRight/></a>
     </header>
     <article>
@@ -16,6 +16,6 @@ export default function SeoPage({ eyebrow, title, lead, children, structuredData
       <div className="seo-content">{children}</div>
     </article>
     <section className="final-cta"><div><p className="marketing-eyebrow">Daha düzenli bir yönetim mümkün</p><h2>Apartmanınızı tek panelden yönetmeye başlayın.</h2><p>Hesabınızı oluşturun, apartmanınızı kurun ve yönetim kayıtlarını düzenli biçimde tutun.</p></div><a className="marketing-primary light" href="/giris">Hesap oluştur <ArrowRight/></a></section>
-    <footer className="marketing-footer"><div className="marketing-brand"><LogoMark className="marketing-logo"/><span><strong>apartmanOS</strong><small>Apartman ve site yönetimi</small></span></div><p>© {new Date().getFullYear()} apartmanOS · Berkant Kul tarafından, Stark Bilişim Hizmetleri çatısı altında geliştirilmiştir.</p><div className="footer-links"><a href="/hakkimizda">Hakkımızda</a><a href="/">Ana sayfa</a><a href="/giris">Giriş yap</a></div></footer>
+    <footer className="marketing-footer"><div className="marketing-brand"><LogoMark className="marketing-logo"/><span><strong>apartmanOS</strong><small>Apartman ve site yönetimi</small></span></div><p>© {new Date().getFullYear()} apartmanOS · Berkant Kul tarafından, Stark Bilişim Hizmetleri çatısı altında geliştirilmiştir.</p><div className="footer-links"><a href="/blog">Blog</a><a href="/hakkimizda">Hakkımızda</a><a href="/">Ana sayfa</a><a href="/giris">Giriş yap</a></div></footer>
   </main>
 }

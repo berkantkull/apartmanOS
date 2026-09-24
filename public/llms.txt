@@ -1,0 +1,30 @@
+# apartmanOS
+
+> apartmanOS, Berkant Kul tarafından geliştirilen ve Stark Bilişim Hizmetleri çatısı altında sunulan web tabanlı apartman ve site yönetim uygulamasıdır.
+
+apartmanOS; apartman yöneticilerinin ve sakinlerin aidat, borç, gider, duyuru, karar ve üyelik bilgilerini her apartmana özel bir çalışma alanında yönetmesini sağlar.
+
+## Temel sayfalar
+
+- [Ana sayfa](https://apartmanos.com.tr/): Ürünün amacı ve temel özellikleri.
+- [Apartman yönetim programı](https://apartmanos.com.tr/apartman-yonetim-programi): Ürün özellikleri ve kullanım akışı.
+- [Aidat takip programı](https://apartmanos.com.tr/aidat-takip-programi): Aidat, borç ve ödeme takibi özellikleri.
+- [Hakkımızda](https://apartmanos.com.tr/hakkimizda): apartmanOS, Berkant Kul ve Stark Bilişim Hizmetleri hakkında bilgi.
+- [Blog](https://apartmanos.com.tr/blog): Apartman yönetimi rehberleri.
+
+## Blog rehberleri
+
+- [Apartman aidat takibi nasıl yapılır?](https://apartmanos.com.tr/blog/apartman-aidat-takibi-nasil-yapilir)
+- [Apartman gider takibi ve şeffaf raporlama](https://apartmanos.com.tr/blog/apartman-gider-takibi-ve-seffaf-raporlama)
+- [Apartman duyuruları nasıl yönetilir?](https://apartmanos.com.tr/blog/apartman-duyurulari-nasil-yonetilir)
+- [Apartman yönetim programı seçerken nelere bakılmalı?](https://apartmanos.com.tr/blog/apartman-yonetim-programi-secerken-nelere-bakilmali)
+
+## Ürün bilgileri
+
+- Kullanıcılar e-posta veya Google hesabıyla giriş yapabilir.
+- Yönetici yeni bir apartman oluşturabilir; sakinler bağlantı veya davet koduyla katılabilir.
+- Bir kullanıcı birden fazla apartmana katılabilir.
+- Yönetim sahibi, yönetici ve sakin rolleri farklı yetkilere sahiptir.
+- Raporlar PDF ve Excel uyumlu formatlarda hazırlanabilir.
+
+İletişim ve geliştirici bilgileri için: https://berkantkul.com.tr

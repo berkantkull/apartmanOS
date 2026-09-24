@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     "apartmanOS", "apartman yönetim programı", "site yönetim programı",
     "aidat takip programı", "apartman aidat takibi", "apartman gider takibi",
   ],
+  alternates: { types: { "application/rss+xml": "https://apartmanos.com.tr/blog/rss.xml" } },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
   icons: {
     icon: [{ url: "/apartmanos-icon.png", type: "image/png" }],

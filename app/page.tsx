@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-html-link-for-pages -- Vinext'in Link/RSC prefetch katmanı üretimde hata verdiği için standart gezinme kullanılıyor. */
 import type { Metadata } from "next";
 import {
   ArrowRight, BadgeTurkishLira, BellRing, BookOpenCheck, Building2,
@@ -69,7 +70,7 @@ export default function MarketingHome() {
           <LogoMark className="marketing-logo" />
           <span><strong>apartmanOS</strong><small>Apartman ve site yönetimi</small></span>
         </a>
-        <nav aria-label="Ana menü"><a href="#ozellikler">Özellikler</a><a href="#nasil-calisir">Nasıl çalışır?</a><a href="/apartman-yonetim-programi">Rehber</a><a href="/hakkimizda">Hakkımızda</a></nav>
+        <nav aria-label="Ana menü"><a href="#ozellikler">Özellikler</a><a href="#nasil-calisir">Nasıl çalışır?</a><a href="/apartman-yonetim-programi">Rehber</a><a href="/blog">Blog</a><a href="/hakkimizda">Hakkımızda</a></nav>
         <a className="header-login" href="/giris">Giriş yap <ArrowRight /></a>
       </header>
 
@@ -130,7 +131,7 @@ export default function MarketingHome() {
 
       <section className="final-cta"><div><p className="marketing-eyebrow">Daha düzenli bir yönetim mümkün</p><h2>Apartmanınızı bugün dijitalleştirin.</h2><p>İlk hesabınızı oluşturun, topluluğunuzu kurun ve yönetim işlerini tek yerde toplamaya başlayın.</p></div><a className="marketing-primary light" href="/giris">Hesap oluştur <ArrowRight /></a></section>
 
-      <footer className="marketing-footer"><div className="marketing-brand"><LogoMark className="marketing-logo" /><span><strong>apartmanOS</strong><small>Apartman ve site yönetimi</small></span></div><p>© {new Date().getFullYear()} apartmanOS · Berkant Kul tarafından, Stark Bilişim Hizmetleri çatısı altında geliştirilmiştir.</p><div className="footer-links"><a href="/hakkimizda">Hakkımızda</a><a href="/apartman-yonetim-programi">Rehber</a><a href="/giris">Giriş yap</a></div></footer>
+      <footer className="marketing-footer"><div className="marketing-brand"><LogoMark className="marketing-logo" /><span><strong>apartmanOS</strong><small>Apartman ve site yönetimi</small></span></div><p>© {new Date().getFullYear()} apartmanOS · Berkant Kul tarafından, Stark Bilişim Hizmetleri çatısı altında geliştirilmiştir.</p><div className="footer-links"><a href="/blog">Blog</a><a href="/hakkimizda">Hakkımızda</a><a href="/apartman-yonetim-programi">Rehber</a><a href="/giris">Giriş yap</a></div></footer>
     </main>
   );
 }
