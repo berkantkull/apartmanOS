@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import {
   ArrowRight, BadgeTurkishLira, BellRing, BookOpenCheck, Building2,
   CheckCircle2, CircleGauge, FileText, ShieldCheck, Sparkles,
@@ -62,16 +61,16 @@ const structuredData = {
 
 export default function MarketingHome() {
   return (
-    <main className="marketing-page">
+    <main className="marketing-page" id="top">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
 
       <header className="marketing-header">
-        <Link className="marketing-brand" href="/" aria-label="apartmanOS ana sayfa">
+        <a className="marketing-brand" href="#top" aria-label="apartmanOS ana sayfa">
           <LogoMark className="marketing-logo" />
           <span><strong>apartmanOS</strong><small>Apartman ve site yönetimi</small></span>
-        </Link>
+        </a>
         <nav aria-label="Ana menü"><a href="#ozellikler">Özellikler</a><a href="#nasil-calisir">Nasıl çalışır?</a><a href="#hakkimizda">Hakkımızda</a></nav>
-        <Link className="header-login" href="/giris">Giriş yap <ArrowRight /></Link>
+        <a className="header-login" href="/giris">Giriş yap <ArrowRight /></a>
       </header>
 
       <section className="hero-section">
@@ -80,7 +79,7 @@ export default function MarketingHome() {
           <h1>Apartman ve site yönetimini <span>tek yerde</span> toplayın.</h1>
           <p className="hero-lead">Aidat, borç, gider, duyuru, karar defteri ve sakin yönetimi artık dağınık değil. apartmanOS ile herkesin anlayabileceği düzenli bir yönetim kurun.</p>
           <div className="hero-actions">
-            <Link className="marketing-primary" href="/giris">Ücretsiz hesap oluştur <ArrowRight /></Link>
+            <a className="marketing-primary" href="/giris">Ücretsiz hesap oluştur <ArrowRight /></a>
             <a className="marketing-secondary" href="#nasil-calisir">Nasıl çalıştığını görün</a>
           </div>
           <div className="hero-trust"><span><CheckCircle2 /> Kurulumsuz kullanım</span><span><CheckCircle2 /> Her cihazdan erişim</span><span><CheckCircle2 /> Apartmana özel kayıtlar</span></div>
@@ -113,7 +112,7 @@ export default function MarketingHome() {
       </section>
 
       <section className="marketing-section how-section" id="nasil-calisir">
-        <div className="how-copy"><p className="marketing-eyebrow">Üç adımda başlayın</p><h2>Teknik bilgiye ihtiyaç duymadan apartmanınızı kurun.</h2><p>apartmanOS her yaştan kullanıcının rahatça anlayabileceği şekilde tasarlandı.</p><Link className="marketing-primary" href="/giris">Hemen kullanmaya başlayın <ArrowRight /></Link></div>
+        <div className="how-copy"><p className="marketing-eyebrow">Üç adımda başlayın</p><h2>Teknik bilgiye ihtiyaç duymadan apartmanınızı kurun.</h2><p>apartmanOS her yaştan kullanıcının rahatça anlayabileceği şekilde tasarlandı.</p><a className="marketing-primary" href="/giris">Hemen kullanmaya başlayın <ArrowRight /></a></div>
         <ol className="steps-list">
           <li><span>01</span><div><h3>Hesabınızı oluşturun</h3><p>Adınız, e-posta adresiniz ve şifrenizle güvenli hesabınızı açın.</p></div></li>
           <li><span>02</span><div><h3>Apartman kurun veya katılın</h3><p>Yeni topluluk oluşturun ya da yöneticinizin verdiği davet kodunu kullanın.</p></div></li>
@@ -128,9 +127,9 @@ export default function MarketingHome() {
 
       <section className="marketing-section faq-section"><div className="section-intro"><p className="marketing-eyebrow">Merak edilenler</p><h2>Sıkça sorulan sorular</h2></div><div className="faq-list">{faqs.map((item) => <details key={item.q}><summary>{item.q}<span>+</span></summary><p>{item.a}</p></details>)}</div></section>
 
-      <section className="final-cta"><div><p className="marketing-eyebrow">Daha düzenli bir yönetim mümkün</p><h2>Apartmanınızı bugün dijitalleştirin.</h2><p>İlk hesabınızı oluşturun, topluluğunuzu kurun ve yönetim işlerini tek yerde toplamaya başlayın.</p></div><Link className="marketing-primary light" href="/giris">Hesap oluştur <ArrowRight /></Link></section>
+      <section className="final-cta"><div><p className="marketing-eyebrow">Daha düzenli bir yönetim mümkün</p><h2>Apartmanınızı bugün dijitalleştirin.</h2><p>İlk hesabınızı oluşturun, topluluğunuzu kurun ve yönetim işlerini tek yerde toplamaya başlayın.</p></div><a className="marketing-primary light" href="/giris">Hesap oluştur <ArrowRight /></a></section>
 
-      <footer className="marketing-footer"><div className="marketing-brand"><LogoMark className="marketing-logo" /><span><strong>apartmanOS</strong><small>Apartman ve site yönetimi</small></span></div><p>© {new Date().getFullYear()} apartmanOS · Berkant Kul tarafından, Stark Bilişim Hizmetleri çatısı altında geliştirilmiştir.</p><Link href="/giris">Giriş yap</Link></footer>
+      <footer className="marketing-footer"><div className="marketing-brand"><LogoMark className="marketing-logo" /><span><strong>apartmanOS</strong><small>Apartman ve site yönetimi</small></span></div><p>© {new Date().getFullYear()} apartmanOS · Berkant Kul tarafından, Stark Bilişim Hizmetleri çatısı altında geliştirilmiştir.</p><a href="/giris">Giriş yap</a></footer>
     </main>
   );
 }
