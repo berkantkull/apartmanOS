@@ -1,5 +1,27 @@
 import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
+export const appUsers = sqliteTable("app_users", {
+  id: text("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  displayName: text("display_name").notNull(),
+  passwordHash: text("password_hash").notNull(),
+  passwordSalt: text("password_salt").notNull(),
+  createdAt: text("created_at").notNull(),
+});
+
+export const sessions = sqliteTable("sessions", {
+  tokenHash: text("token_hash").primaryKey(),
+  userId: text("user_id").notNull().references(() => appUsers.id, { onDelete: "cascade" }),
+  expiresAt: integer("expires_at").notNull(),
+  createdAt: text("created_at").notNull(),
+}, table => [uniqueIndex("idx_sessions_token_user").on(table.tokenHash, table.userId)]);
+
+export const authLimits = sqliteTable("auth_limits", {
+  key: text("key").primaryKey(),
+  attempts: integer("attempts").notNull().default(0),
+  resetAt: integer("reset_at").notNull(),
+});
+
 export const communities = sqliteTable("communities", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),

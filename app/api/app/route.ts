@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getChatGPTUser } from "@/app/chatgpt-auth";
+import { getSessionUser, sameOrigin } from "@/app/auth";
 import { getD1 } from "@/db";
 
 type Role = "owner" | "manager" | "resident";
@@ -13,7 +13,7 @@ const now = () => new Date().toISOString();
 const inviteCode = () => Array.from(crypto.getRandomValues(new Uint8Array(7)), n => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[n % 32]).join("");
 
 async function context() {
-  const user = await getChatGPTUser();
+  const user = await getSessionUser();
   if (!user) return { user: null, membership: null };
   const membership = await getD1().prepare(
     "SELECT community_id, role FROM members WHERE user_id = ? ORDER BY joined_at LIMIT 1"
@@ -54,6 +54,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  if (!sameOrigin(request)) return fail("Geçersiz istek.", 403);
   const { user, membership } = await context();
   if (!user) return fail("Oturum açmanız gerekiyor.", 401);
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;

@@ -4,7 +4,7 @@ apartmanOS, apartman ve site yönetimlerinin aidat, borç, gider, duyuru, karar 
 
 ## İlk sürümde bulunanlar
 
-- ChatGPT hesabıyla güvenli giriş
+- E-posta ve şifreyle hesap oluşturma ve güvenli giriş
 - Her apartman/site için birbirinden ayrılmış yönetim alanı
 - Davet koduyla sakin katılımı
 - Yönetim sahibi, yönetici ve sakin rolleri
@@ -28,7 +28,7 @@ node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1
 npm run dev
 ```
 
-Yerel giriş için `/signin-with-chatgpt?return_to=/` adresi kullanılabilir. Uygulama varsayılan olarak `http://localhost:5173` adresinde açılır.
+Uygulama varsayılan olarak `http://localhost:5173` adresinde açılır. Yerel ortamda giriş ekranından yeni bir test hesabı oluşturabilirsiniz.
 
 ## Teknoloji
 
