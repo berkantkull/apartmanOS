@@ -15,16 +15,16 @@
   "categories": ["business", "finance", "productivity", "utilities"],
   "icons": [
     {
-      "src": "/apartmanos-icon.png",
-      "sizes": "1254x1254",
+      "src": "/pwa-192.png",
+      "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/apartmanos-icon.png",
-      "sizes": "1254x1254",
+      "src": "/pwa-512.png",
+      "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ],
   "shortcuts": [
@@ -33,14 +33,14 @@
       "short_name": "Panel",
       "description": "apartmanOS yönetim paneline git",
       "url": "/giris?source=pwa-shortcut",
-      "icons": [{ "src": "/apartmanos-icon.png", "sizes": "1254x1254", "type": "image/png" }]
+      "icons": [{ "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "Apartman yönetimi rehberleri",
       "short_name": "Blog",
       "description": "Apartman yönetimi blogunu aç",
       "url": "/blog?source=pwa-shortcut",
-      "icons": [{ "src": "/apartmanos-icon.png", "sizes": "1254x1254", "type": "image/png" }]
+      "icons": [{ "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }

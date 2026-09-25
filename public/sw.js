@@ -1,6 +1,6 @@
-const CACHE_NAME = "apartmanos-static-v1";
+const CACHE_NAME = "apartmanos-static-v2";
 const OFFLINE_URL = "/offline";
-const PRECACHE = [OFFLINE_URL, "/apartmanos-icon.png", "/manifest.webmanifest"];
+const PRECACHE = [OFFLINE_URL, "/pwa-192.png", "/pwa-512.png", "/manifest.webmanifest"];
 
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(PRECACHE)).then(() => self.skipWaiting()));
@@ -21,7 +21,7 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  const isStaticAsset = url.pathname.startsWith("/_next/static/") || url.pathname === "/apartmanos-icon.png" || url.pathname === "/manifest.webmanifest";
+  const isStaticAsset = url.pathname.startsWith("/_next/static/") || url.pathname === "/pwa-192.png" || url.pathname === "/pwa-512.png" || url.pathname === "/manifest.webmanifest";
   if (!isStaticAsset) return;
   event.respondWith(caches.match(request).then(cached => cached || fetch(request).then(response => {
     if (!response.ok) return response;
