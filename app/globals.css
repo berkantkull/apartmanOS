@@ -45,7 +45,8 @@
 
 /* Shared content rails: header and page content use the same horizontal bounds. */
 .app-header{display:block;padding:0}
-.app-header-inner{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:1440px;height:100%;margin:0 auto;padding:0 3%}
+.app-header-inner{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:none;height:100%;margin:0;padding:0 3%}
+.app-main{max-width:none;margin:0}
 .seo-hero,.seo-content{width:min(1180px,calc(100% - 3rem))}
 .seo-content>section>p,.seo-content>section>ol,.seo-faq details{max-width:920px}
 @media(max-width:640px){.app-header{padding:0}.app-header-inner{padding:0 .8rem}.seo-hero,.seo-content{width:min(100% - 2rem,1180px)}}
