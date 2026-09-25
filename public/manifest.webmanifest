@@ -1,0 +1,46 @@
+{
+  "id": "/giris",
+  "name": "apartmanOS – Apartman ve Site Yönetimi",
+  "short_name": "apartmanOS",
+  "description": "Aidat, gider, duyuru, karar ve sakin yönetimini apartmanınıza özel tek yerde yönetin.",
+  "lang": "tr-TR",
+  "dir": "ltr",
+  "start_url": "/giris?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#f4f8fc",
+  "theme_color": "#062b50",
+  "categories": ["business", "finance", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/apartmanos-icon.png",
+      "sizes": "1254x1254",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apartmanos-icon.png",
+      "sizes": "1254x1254",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Yönetim panelini aç",
+      "short_name": "Panel",
+      "description": "apartmanOS yönetim paneline git",
+      "url": "/giris?source=pwa-shortcut",
+      "icons": [{ "src": "/apartmanos-icon.png", "sizes": "1254x1254", "type": "image/png" }]
+    },
+    {
+      "name": "Apartman yönetimi rehberleri",
+      "short_name": "Blog",
+      "description": "Apartman yönetimi blogunu aç",
+      "url": "/blog?source=pwa-shortcut",
+      "icons": [{ "src": "/apartmanos-icon.png", "sizes": "1254x1254", "type": "image/png" }]
+    }
+  ]
+}
