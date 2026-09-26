@@ -38,6 +38,10 @@ CREATE TABLE IF NOT EXISTS communities (
   owner_user_id TEXT NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT,
   created_at TEXT NOT NULL
 );
+ALTER TABLE communities ADD COLUMN IF NOT EXISTS auto_due_enabled INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE communities ADD COLUMN IF NOT EXISTS due_day INTEGER NOT NULL DEFAULT 10;
+ALTER TABLE communities ADD COLUMN IF NOT EXISTS late_interest_rate INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE communities ADD COLUMN IF NOT EXISTS payment_link TEXT;
 
 CREATE TABLE IF NOT EXISTS members (
   id TEXT PRIMARY KEY,
@@ -76,6 +80,7 @@ CREATE TABLE IF NOT EXISTS notifications (
   read_at TEXT,
   created_at TEXT NOT NULL
 );
+ALTER TABLE notifications ADD COLUMN IF NOT EXISTS source_key TEXT;
 
 CREATE TABLE IF NOT EXISTS auth_tokens (
   token_hash TEXT PRIMARY KEY,
@@ -105,6 +110,39 @@ CREATE TABLE IF NOT EXISTS dues (
   due_date TEXT NOT NULL,
   created_by TEXT NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT,
   created_at TEXT NOT NULL
+);
+ALTER TABLE dues ADD COLUMN IF NOT EXISTS period TEXT NOT NULL DEFAULT '';
+ALTER TABLE dues ADD COLUMN IF NOT EXISTS kind TEXT NOT NULL DEFAULT 'monthly';
+ALTER TABLE dues ADD COLUMN IF NOT EXISTS note TEXT;
+ALTER TABLE dues ADD COLUMN IF NOT EXISTS interest_rate INTEGER NOT NULL DEFAULT 0;
+
+CREATE TABLE IF NOT EXISTS payments (
+  id TEXT PRIMARY KEY,
+  community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+  due_id TEXT NOT NULL REFERENCES dues(id) ON DELETE CASCADE,
+  resident_name TEXT NOT NULL,
+  unit TEXT NOT NULL,
+  amount INTEGER NOT NULL,
+  method TEXT NOT NULL DEFAULT 'manual' CHECK (method IN ('manual', 'cash', 'transfer', 'card')),
+  reference TEXT,
+  status TEXT NOT NULL DEFAULT 'confirmed' CHECK (status IN ('confirmed', 'pending', 'rejected')),
+  paid_at TEXT NOT NULL,
+  recorded_by TEXT NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT,
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS transfer_notifications (
+  id TEXT PRIMARY KEY,
+  community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+  due_id TEXT NOT NULL REFERENCES dues(id) ON DELETE CASCADE,
+  member_user_id TEXT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+  amount INTEGER NOT NULL,
+  reference TEXT,
+  note TEXT,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+  reviewed_by TEXT REFERENCES app_users(id) ON DELETE SET NULL,
+  created_at TEXT NOT NULL,
+  reviewed_at TEXT
 );
 
 CREATE TABLE IF NOT EXISTS expenses (
@@ -148,3 +186,6 @@ CREATE INDEX IF NOT EXISTS idx_decisions_community ON decisions(community_id);
 CREATE INDEX IF NOT EXISTS idx_invitations_community ON invitations(community_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_auth_tokens_user ON auth_tokens(user_id, kind);
+CREATE INDEX IF NOT EXISTS idx_payments_due ON payments(due_id, paid_at);
+CREATE INDEX IF NOT EXISTS idx_payments_community ON payments(community_id, paid_at);
+CREATE INDEX IF NOT EXISTS idx_transfer_notifications_community ON transfer_notifications(community_id, status, created_at);

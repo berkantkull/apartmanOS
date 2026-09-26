@@ -33,6 +33,10 @@ export const communities = pgTable("communities", {
   monthlyDue: integer("monthly_due").notNull().default(0),
   period: text("period").notNull(),
   inviteCode: text("invite_code").notNull().unique(),
+  autoDueEnabled: integer("auto_due_enabled").notNull().default(0),
+  dueDay: integer("due_day").notNull().default(10),
+  lateInterestRate: integer("late_interest_rate").notNull().default(0),
+  paymentLink: text("payment_link"),
   ownerUserId: text("owner_user_id").notNull(),
   createdAt: text("created_at").notNull(),
 });
@@ -79,6 +83,7 @@ export const notifications = pgTable("notifications", {
   title: text("title").notNull(),
   body: text("body").notNull(),
   kind: text("kind").notNull().default("announcement"),
+  sourceKey: text("source_key"),
   readAt: text("read_at"),
   createdAt: text("created_at").notNull(),
 });
@@ -97,10 +102,43 @@ export const dues = pgTable("dues", {
   residentName: text("resident_name").notNull(),
   unit: text("unit").notNull(),
   amount: integer("amount").notNull(),
+  period: text("period").notNull().default(""),
+  kind: text("kind", { enum: ["monthly", "extra"] }).notNull().default("monthly"),
+  note: text("note"),
+  interestRate: integer("interest_rate").notNull().default(0),
   status: text("status", { enum: ["pending", "paid", "late"] }).notNull().default("pending"),
   dueDate: text("due_date").notNull(),
   createdBy: text("created_by").notNull(),
   createdAt: text("created_at").notNull(),
+});
+
+export const payments = pgTable("payments", {
+  id: text("id").primaryKey(),
+  communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
+  dueId: text("due_id").notNull().references(() => dues.id, { onDelete: "cascade" }),
+  residentName: text("resident_name").notNull(),
+  unit: text("unit").notNull(),
+  amount: integer("amount").notNull(),
+  method: text("method", { enum: ["manual", "cash", "transfer", "card"] }).notNull().default("manual"),
+  reference: text("reference"),
+  status: text("status", { enum: ["confirmed", "pending", "rejected"] }).notNull().default("confirmed"),
+  paidAt: text("paid_at").notNull(),
+  recordedBy: text("recorded_by").notNull(),
+  createdAt: text("created_at").notNull(),
+});
+
+export const transferNotifications = pgTable("transfer_notifications", {
+  id: text("id").primaryKey(),
+  communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
+  dueId: text("due_id").notNull().references(() => dues.id, { onDelete: "cascade" }),
+  memberUserId: text("member_user_id").notNull(),
+  amount: integer("amount").notNull(),
+  reference: text("reference"),
+  note: text("note"),
+  status: text("status", { enum: ["pending", "approved", "rejected"] }).notNull().default("pending"),
+  reviewedBy: text("reviewed_by"),
+  createdAt: text("created_at").notNull(),
+  reviewedAt: text("reviewed_at"),
 });
 
 export const expenses = pgTable("expenses", {
