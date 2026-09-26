@@ -1,4 +1,4 @@
-const CACHE_NAME = "apartmanos-static-v2";
+const CACHE_NAME = "apartmanos-static-v3";
 const OFFLINE_URL = "/offline";
 const PRECACHE = [OFFLINE_URL, "/pwa-192.png", "/pwa-512.png", "/manifest.webmanifest"];
 
@@ -29,4 +29,26 @@ self.addEventListener("fetch", event => {
     caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
     return response;
   })));
+});
+
+self.addEventListener("push", event => {
+  let payload = { title: "apartmanOS", body: "Yeni bir duyurunuz var.", url: "/giris", tag: "apartmanos-announcement" };
+  try { payload = { ...payload, ...event.data.json() }; } catch {}
+  event.waitUntil(self.registration.showNotification(payload.title, {
+    body: payload.body,
+    icon: "/pwa-192.png",
+    badge: "/pwa-192.png",
+    tag: payload.tag,
+    data: { url: payload.url || "/giris" }
+  }));
+});
+
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+  const target = new URL(event.notification.data?.url || "/giris", self.location.origin).href;
+  event.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(windows => {
+    const existing = windows.find(client => client.url.startsWith(self.location.origin));
+    if (existing) return existing.navigate(target).then(client => client?.focus());
+    return self.clients.openWindow(target);
+  }));
 });

@@ -159,7 +159,32 @@ export const announcements = pgTable("announcements", {
   title: text("title").notNull(),
   body: text("body").notNull(),
   kind: text("kind").notNull().default("Bilgilendirme"),
+  category: text("category").notNull().default("Bilgilendirme"),
+  targetScope: text("target_scope", { enum: ["all", "block", "units"] }).notNull().default("all"),
+  targetValue: text("target_value"),
+  publishAt: text("publish_at"),
+  isUrgent: integer("is_urgent").notNull().default(0),
+  archivedAt: text("archived_at"),
+  attachmentId: text("attachment_id"),
   createdBy: text("created_by").notNull(),
+  createdAt: text("created_at").notNull(),
+});
+
+export const announcementReads = pgTable("announcement_reads", {
+  id: text("id").primaryKey(),
+  announcementId: text("announcement_id").notNull().references(() => announcements.id, { onDelete: "cascade" }),
+  userId: text("user_id").notNull().references(() => appUsers.id, { onDelete: "cascade" }),
+  readAt: text("read_at").notNull(),
+}, table => [uniqueIndex("idx_announcement_reads_unique").on(table.announcementId, table.userId)]);
+
+export const announcementAttachments = pgTable("announcement_attachments", {
+  id: text("id").primaryKey(),
+  communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
+  objectKey: text("object_key").notNull().unique(),
+  fileName: text("file_name").notNull(),
+  contentType: text("content_type").notNull(),
+  size: integer("size").notNull(),
+  uploadedBy: text("uploaded_by").notNull(),
   createdAt: text("created_at").notNull(),
 });
 

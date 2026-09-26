@@ -166,6 +166,32 @@ CREATE TABLE IF NOT EXISTS announcements (
   created_by TEXT NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT,
   created_at TEXT NOT NULL
 );
+ALTER TABLE announcements ADD COLUMN IF NOT EXISTS category TEXT NOT NULL DEFAULT 'Bilgilendirme';
+ALTER TABLE announcements ADD COLUMN IF NOT EXISTS target_scope TEXT NOT NULL DEFAULT 'all';
+ALTER TABLE announcements ADD COLUMN IF NOT EXISTS target_value TEXT;
+ALTER TABLE announcements ADD COLUMN IF NOT EXISTS publish_at TEXT;
+ALTER TABLE announcements ADD COLUMN IF NOT EXISTS is_urgent INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE announcements ADD COLUMN IF NOT EXISTS archived_at TEXT;
+ALTER TABLE announcements ADD COLUMN IF NOT EXISTS attachment_id TEXT;
+
+CREATE TABLE IF NOT EXISTS announcement_reads (
+  id TEXT PRIMARY KEY,
+  announcement_id TEXT NOT NULL REFERENCES announcements(id) ON DELETE CASCADE,
+  user_id TEXT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+  read_at TEXT NOT NULL,
+  UNIQUE (announcement_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS announcement_attachments (
+  id TEXT PRIMARY KEY,
+  community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+  object_key TEXT NOT NULL UNIQUE,
+  file_name TEXT NOT NULL,
+  content_type TEXT NOT NULL,
+  size INTEGER NOT NULL,
+  uploaded_by TEXT NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT,
+  created_at TEXT NOT NULL
+);
 
 CREATE TABLE IF NOT EXISTS decisions (
   id TEXT PRIMARY KEY,
@@ -182,6 +208,8 @@ CREATE INDEX IF NOT EXISTS idx_residents_community ON residents(community_id);
 CREATE INDEX IF NOT EXISTS idx_dues_community ON dues(community_id);
 CREATE INDEX IF NOT EXISTS idx_expenses_community ON expenses(community_id);
 CREATE INDEX IF NOT EXISTS idx_announcements_community ON announcements(community_id);
+CREATE INDEX IF NOT EXISTS idx_announcement_reads_announcement ON announcement_reads(announcement_id, read_at);
+CREATE INDEX IF NOT EXISTS idx_announcement_attachments_community ON announcement_attachments(community_id);
 CREATE INDEX IF NOT EXISTS idx_decisions_community ON decisions(community_id);
 CREATE INDEX IF NOT EXISTS idx_invitations_community ON invitations(community_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, created_at);
