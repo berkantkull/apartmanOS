@@ -148,8 +148,43 @@ export const expenses = pgTable("expenses", {
   category: text("category").notNull(),
   amount: integer("amount").notNull(),
   note: text("note"),
+  account: text("account", { enum: ["cash", "bank"] }).notNull().default("cash"),
+  attachmentId: text("attachment_id"),
   expenseDate: text("expense_date").notNull(),
   createdBy: text("created_by").notNull(),
+  createdAt: text("created_at").notNull(),
+});
+
+export const incomes = pgTable("incomes", {
+  id: text("id").primaryKey(),
+  communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  category: text("category").notNull(),
+  amount: integer("amount").notNull(),
+  account: text("account", { enum: ["cash", "bank"] }).notNull().default("cash"),
+  note: text("note"),
+  incomeDate: text("income_date").notNull(),
+  attachmentId: text("attachment_id"),
+  createdBy: text("created_by").notNull(),
+  createdAt: text("created_at").notNull(),
+});
+
+export const financeCategories = pgTable("finance_categories", {
+  id: text("id").primaryKey(),
+  communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  kind: text("kind", { enum: ["expense"] }).notNull().default("expense"),
+  createdAt: text("created_at").notNull(),
+}, table => [uniqueIndex("idx_finance_categories_unique").on(table.communityId, table.name, table.kind)]);
+
+export const financeAttachments = pgTable("finance_attachments", {
+  id: text("id").primaryKey(),
+  communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
+  objectKey: text("object_key").notNull().unique(),
+  fileName: text("file_name").notNull(),
+  contentType: text("content_type").notNull(),
+  size: integer("size").notNull(),
+  uploadedBy: text("uploaded_by").notNull(),
   createdAt: text("created_at").notNull(),
 });
 

@@ -156,6 +156,42 @@ CREATE TABLE IF NOT EXISTS expenses (
   created_by TEXT NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT,
   created_at TEXT NOT NULL
 );
+ALTER TABLE expenses ADD COLUMN IF NOT EXISTS account TEXT NOT NULL DEFAULT 'cash';
+ALTER TABLE expenses ADD COLUMN IF NOT EXISTS attachment_id TEXT;
+
+CREATE TABLE IF NOT EXISTS incomes (
+  id TEXT PRIMARY KEY,
+  community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  category TEXT NOT NULL,
+  amount INTEGER NOT NULL,
+  account TEXT NOT NULL DEFAULT 'cash',
+  note TEXT,
+  income_date TEXT NOT NULL,
+  attachment_id TEXT,
+  created_by TEXT NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT,
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS finance_categories (
+  id TEXT PRIMARY KEY,
+  community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  kind TEXT NOT NULL DEFAULT 'expense',
+  created_at TEXT NOT NULL,
+  UNIQUE (community_id, name, kind)
+);
+
+CREATE TABLE IF NOT EXISTS finance_attachments (
+  id TEXT PRIMARY KEY,
+  community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+  object_key TEXT NOT NULL UNIQUE,
+  file_name TEXT NOT NULL,
+  content_type TEXT NOT NULL,
+  size INTEGER NOT NULL,
+  uploaded_by TEXT NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT,
+  created_at TEXT NOT NULL
+);
 
 CREATE TABLE IF NOT EXISTS announcements (
   id TEXT PRIMARY KEY,
@@ -207,6 +243,9 @@ CREATE INDEX IF NOT EXISTS idx_members_user ON members(user_id);
 CREATE INDEX IF NOT EXISTS idx_residents_community ON residents(community_id);
 CREATE INDEX IF NOT EXISTS idx_dues_community ON dues(community_id);
 CREATE INDEX IF NOT EXISTS idx_expenses_community ON expenses(community_id);
+CREATE INDEX IF NOT EXISTS idx_incomes_community ON incomes(community_id, income_date);
+CREATE INDEX IF NOT EXISTS idx_finance_categories_community ON finance_categories(community_id, kind);
+CREATE INDEX IF NOT EXISTS idx_finance_attachments_community ON finance_attachments(community_id);
 CREATE INDEX IF NOT EXISTS idx_announcements_community ON announcements(community_id);
 CREATE INDEX IF NOT EXISTS idx_announcement_reads_announcement ON announcement_reads(announcement_id, read_at);
 CREATE INDEX IF NOT EXISTS idx_announcement_attachments_community ON announcement_attachments(community_id);
