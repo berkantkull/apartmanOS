@@ -188,6 +188,48 @@ export const financeAttachments = pgTable("finance_attachments", {
   createdAt: text("created_at").notNull(),
 });
 
+export const maintenanceRequests = pgTable("maintenance_requests", {
+  id: text("id").primaryKey(),
+  communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
+  creatorUserId: text("creator_user_id").notNull().references(() => appUsers.id, { onDelete: "restrict" }),
+  creatorName: text("creator_name").notNull(),
+  unit: text("unit"),
+  requestType: text("request_type", { enum: ["fault", "request"] }).notNull().default("fault"),
+  category: text("category").notNull(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  priority: text("priority", { enum: ["low", "normal", "high", "urgent"] }).notNull().default("normal"),
+  status: text("status", { enum: ["new", "reviewing", "in_progress", "resolved", "cancelled"] }).notNull().default("new"),
+  managerNote: text("manager_note"),
+  attachmentId: text("attachment_id"),
+  resolutionAttachmentId: text("resolution_attachment_id"),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+  resolvedAt: text("resolved_at"),
+});
+
+export const maintenanceHistory = pgTable("maintenance_history", {
+  id: text("id").primaryKey(),
+  requestId: text("request_id").notNull().references(() => maintenanceRequests.id, { onDelete: "cascade" }),
+  actorUserId: text("actor_user_id").notNull().references(() => appUsers.id, { onDelete: "restrict" }),
+  actorName: text("actor_name").notNull(),
+  action: text("action").notNull(),
+  note: text("note"),
+  createdAt: text("created_at").notNull(),
+});
+
+export const maintenanceAttachments = pgTable("maintenance_attachments", {
+  id: text("id").primaryKey(),
+  communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
+  objectKey: text("object_key").notNull().unique(),
+  fileName: text("file_name").notNull(),
+  contentType: text("content_type").notNull(),
+  size: integer("size").notNull(),
+  purpose: text("purpose", { enum: ["initial", "resolution"] }).notNull().default("initial"),
+  uploadedBy: text("uploaded_by").notNull().references(() => appUsers.id, { onDelete: "restrict" }),
+  createdAt: text("created_at").notNull(),
+});
+
 export const announcements = pgTable("announcements", {
   id: text("id").primaryKey(),
   communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),

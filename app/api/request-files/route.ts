@@ -1,0 +1,18 @@
+import { env } from "cloudflare:workers";
+import { NextResponse } from "next/server";
+import { getSessionUser, sameOrigin } from "@/app/auth";
+import { getDatabase } from "@/db";
+import { ensureRequestSchema } from "@/app/api/app/requests";
+
+const allowedImages=new Set(["image/jpeg","image/png","image/webp"]),allowedVideos=new Set(["video/mp4","video/webm","video/quicktime"]),fail=(message:string,status=400)=>NextResponse.json({error:message},{status}),id=()=>crypto.randomUUID();
+async function membership(userId:string,communityId:string){return getDatabase().prepare("SELECT role FROM members WHERE user_id=? AND community_id=?").bind(userId,communityId).first<{role:string}>()}
+
+export async function POST(request:Request){
+  if(!sameOrigin(request))return fail("Geçersiz istek.",403);const user=await getSessionUser();if(!user)return fail("Oturum açmanız gerekiyor.",401);await ensureRequestSchema();const form=await request.formData(),communityId=String(form.get("communityId")||""),purpose=String(form.get("purpose")||"initial")==="resolution"?"resolution":"initial",file=form.get("file"),member=await membership(user.userId,communityId);if(!member)return fail("Bu apartmana erişiminiz yok.",403);if(purpose==="resolution"&&!["owner","manager"].includes(member.role))return fail("Çözüm fotoğrafını yalnızca yöneticiler yükleyebilir.",403);if(!(file instanceof File)||!file.size)return fail("Yüklenecek dosyayı seçin.");
+  const isImage=allowedImages.has(file.type),isVideo=allowedVideos.has(file.type);if(!isImage&&!(purpose==="initial"&&isVideo))return fail(purpose==="resolution"?"Çözüm için JPG, PNG veya WebP fotoğraf kullanın.":"JPG, PNG, WebP, MP4, WebM veya MOV dosyası kullanın.",415);if(file.size>(isVideo?30:10)*1024*1024)return fail(isVideo?"Video en fazla 30 MB olabilir.":"Fotoğraf en fazla 10 MB olabilir.",413);
+  const bucket=env.BUCKET as R2Bucket|undefined;if(!bucket)return fail("Dosya depolama alanı kullanılamıyor.",503);const attachmentId=id(),safeName=file.name.replace(/[^a-zA-Z0-9._-]+/g,"-").slice(-100)||"dosya",objectKey=`maintenance/${communityId}/${attachmentId}-${safeName}`,createdAt=new Date().toISOString();await bucket.put(objectKey,file.stream(),{httpMetadata:{contentType:file.type}});try{await getDatabase().prepare("INSERT INTO maintenance_attachments (id,community_id,object_key,file_name,content_type,size,purpose,uploaded_by,created_at) VALUES (?,?,?,?,?,?,?,?,?)").bind(attachmentId,communityId,objectKey,file.name.slice(0,200),file.type,file.size,purpose,user.userId,createdAt).run()}catch(error){await bucket.delete(objectKey);throw error}return NextResponse.json({ok:true,attachmentId});
+}
+
+export async function GET(request:Request){
+  const user=await getSessionUser();if(!user)return fail("Oturum açmanız gerekiyor.",401);await ensureRequestSchema();const attachmentId=new URL(request.url).searchParams.get("id")||"",row=await getDatabase().prepare("SELECT id,community_id,object_key,file_name,content_type,size FROM maintenance_attachments WHERE id=?").bind(attachmentId).first<{id:string;community_id:string;object_key:string;file_name:string;content_type:string;size:number}>();if(!row)return fail("Dosya bulunamadı.",404);if(!await membership(user.userId,row.community_id))return fail("Bu dosyaya erişiminiz yok.",403);const bucket=env.BUCKET as R2Bucket|undefined;if(!bucket)return fail("Dosya depolama alanı kullanılamıyor.",503);const object=await bucket.get(row.object_key);if(!object)return fail("Dosya bulunamadı.",404);return new Response(object.body,{headers:{"content-type":row.content_type,"content-length":String(row.size),"content-disposition":`inline; filename*=UTF-8''${encodeURIComponent(row.file_name)}`,"cache-control":"private, max-age=300","x-content-type-options":"nosniff"}});
+}

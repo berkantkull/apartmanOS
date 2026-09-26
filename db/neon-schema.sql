@@ -193,6 +193,48 @@ CREATE TABLE IF NOT EXISTS finance_attachments (
   created_at TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS maintenance_requests (
+  id TEXT PRIMARY KEY,
+  community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+  creator_user_id TEXT NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT,
+  creator_name TEXT NOT NULL,
+  unit TEXT,
+  request_type TEXT NOT NULL DEFAULT 'fault',
+  category TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  priority TEXT NOT NULL DEFAULT 'normal',
+  status TEXT NOT NULL DEFAULT 'new',
+  manager_note TEXT,
+  attachment_id TEXT,
+  resolution_attachment_id TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  resolved_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS maintenance_history (
+  id TEXT PRIMARY KEY,
+  request_id TEXT NOT NULL REFERENCES maintenance_requests(id) ON DELETE CASCADE,
+  actor_user_id TEXT NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT,
+  actor_name TEXT NOT NULL,
+  action TEXT NOT NULL,
+  note TEXT,
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS maintenance_attachments (
+  id TEXT PRIMARY KEY,
+  community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+  object_key TEXT NOT NULL UNIQUE,
+  file_name TEXT NOT NULL,
+  content_type TEXT NOT NULL,
+  size INTEGER NOT NULL,
+  purpose TEXT NOT NULL DEFAULT 'initial',
+  uploaded_by TEXT NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT,
+  created_at TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS announcements (
   id TEXT PRIMARY KEY,
   community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
@@ -246,6 +288,10 @@ CREATE INDEX IF NOT EXISTS idx_expenses_community ON expenses(community_id);
 CREATE INDEX IF NOT EXISTS idx_incomes_community ON incomes(community_id, income_date);
 CREATE INDEX IF NOT EXISTS idx_finance_categories_community ON finance_categories(community_id, kind);
 CREATE INDEX IF NOT EXISTS idx_finance_attachments_community ON finance_attachments(community_id);
+CREATE INDEX IF NOT EXISTS idx_maintenance_requests_community ON maintenance_requests(community_id, status, updated_at);
+CREATE INDEX IF NOT EXISTS idx_maintenance_requests_creator ON maintenance_requests(creator_user_id, updated_at);
+CREATE INDEX IF NOT EXISTS idx_maintenance_history_request ON maintenance_history(request_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_maintenance_attachments_community ON maintenance_attachments(community_id);
 CREATE INDEX IF NOT EXISTS idx_announcements_community ON announcements(community_id);
 CREATE INDEX IF NOT EXISTS idx_announcement_reads_announcement ON announcement_reads(announcement_id, read_at);
 CREATE INDEX IF NOT EXISTS idx_announcement_attachments_community ON announcement_attachments(community_id);
