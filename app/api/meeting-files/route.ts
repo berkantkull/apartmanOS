@@ -1,0 +1,17 @@
+import { env } from "cloudflare:workers";
+import { NextResponse } from "next/server";
+import { getSessionUser, sameOrigin } from "@/app/auth";
+import { getDatabase } from "@/db";
+import { ensureMeetingSchema } from "@/app/api/app/meetings";
+
+const allowed=new Set(["application/pdf","image/jpeg","image/png","image/webp","application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document"]),fail=(message:string,status=400)=>NextResponse.json({error:message},{status}),id=()=>crypto.randomUUID();
+async function membership(userId:string,communityId:string){return getDatabase().prepare("SELECT role FROM members WHERE user_id=? AND community_id=?").bind(userId,communityId).first<{role:string}>()}
+
+export async function POST(request:Request){
+  if(!sameOrigin(request))return fail("Geçersiz istek.",403);const user=await getSessionUser();if(!user)return fail("Oturum açmanız gerekiyor.",401);await ensureMeetingSchema();const form=await request.formData(),communityId=String(form.get("communityId")||""),file=form.get("file"),member=await membership(user.userId,communityId);if(!member||!["owner","manager"].includes(member.role))return fail("Toplantı belgesi yüklemek için yönetici yetkisi gerekiyor.",403);if(!(file instanceof File)||!file.size)return fail("Yüklenecek dosyayı seçin.");if(!allowed.has(file.type))return fail("PDF, Word, JPG, PNG veya WebP dosyası kullanın.",415);if(file.size>15*1024*1024)return fail("Toplantı belgesi en fazla 15 MB olabilir.",413);
+  const bucket=env.BUCKET as R2Bucket|undefined;if(!bucket)return fail("Dosya depolama alanı kullanılamıyor.",503);const documentId=id(),safeName=file.name.replace(/[^a-zA-Z0-9._-]+/g,"-").slice(-100)||"belge",objectKey=`meetings/${communityId}/${documentId}-${safeName}`,createdAt=new Date().toISOString();await bucket.put(objectKey,file.stream(),{httpMetadata:{contentType:file.type}});try{await getDatabase().prepare("INSERT INTO meeting_documents (id,community_id,meeting_id,object_key,file_name,content_type,size,document_type,uploaded_by,created_at) VALUES (?,?,NULL,?,?,?,?, 'minutes',?,?)").bind(documentId,communityId,objectKey,file.name.slice(0,200),file.type,file.size,user.userId,createdAt).run()}catch(error){await bucket.delete(objectKey);throw error}return NextResponse.json({ok:true,documentId});
+}
+
+export async function GET(request:Request){
+  const user=await getSessionUser();if(!user)return fail("Oturum açmanız gerekiyor.",401);await ensureMeetingSchema();const documentId=new URL(request.url).searchParams.get("id")||"",row=await getDatabase().prepare("SELECT id,community_id,object_key,file_name,content_type,size FROM meeting_documents WHERE id=? AND meeting_id IS NOT NULL").bind(documentId).first<{id:string;community_id:string;object_key:string;file_name:string;content_type:string;size:number}>();if(!row)return fail("Belge bulunamadı.",404);if(!await membership(user.userId,row.community_id))return fail("Bu belgeye erişiminiz yok.",403);const bucket=env.BUCKET as R2Bucket|undefined;if(!bucket)return fail("Dosya depolama alanı kullanılamıyor.",503);const object=await bucket.get(row.object_key);if(!object)return fail("Belge bulunamadı.",404);return new Response(object.body,{headers:{"content-type":row.content_type,"content-length":String(row.size),"content-disposition":`inline; filename*=UTF-8''${encodeURIComponent(row.file_name)}`,"cache-control":"private, max-age=300","x-content-type-options":"nosniff"}});
+}

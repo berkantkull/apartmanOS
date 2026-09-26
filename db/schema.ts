@@ -274,3 +274,37 @@ export const decisions = pgTable("decisions", {
   createdBy: text("created_by").notNull(),
   createdAt: text("created_at").notNull(),
 });
+
+export const meetings = pgTable("meetings", {
+  id: text("id").primaryKey(),
+  communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  meetingType: text("meeting_type").notNull().default("Olağan Genel Kurul"),
+  meetingAt: text("meeting_at").notNull(),
+  location: text("location").notNull(),
+  agenda: text("agenda").notNull(),
+  notes: text("notes"),
+  status: text("status").notNull().default("planned"),
+  createdBy: text("created_by").notNull().references(() => appUsers.id, { onDelete: "restrict" }),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
+
+export const meetingAttendees = pgTable("meeting_attendees", {
+  id: text("id").primaryKey(), meetingId: text("meeting_id").notNull().references(() => meetings.id, { onDelete: "cascade" }),
+  userId: text("user_id"), name: text("name").notNull(), unit: text("unit"),
+  status: text("status").notNull().default("invited"), updatedAt: text("updated_at").notNull(),
+});
+
+export const meetingDecisions = pgTable("meeting_decisions", {
+  id: text("id").primaryKey(), meetingId: text("meeting_id").notNull().references(() => meetings.id, { onDelete: "cascade" }),
+  decisionNo: text("decision_no").notNull(), decisionDate: text("decision_date").notNull(), title: text("title").notNull(), body: text("body").notNull(),
+  createdBy: text("created_by").notNull().references(() => appUsers.id, { onDelete: "restrict" }), createdAt: text("created_at").notNull(),
+});
+
+export const meetingDocuments = pgTable("meeting_documents", {
+  id: text("id").primaryKey(), communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
+  meetingId: text("meeting_id").references(() => meetings.id, { onDelete: "cascade" }), objectKey: text("object_key").notNull().unique(),
+  fileName: text("file_name").notNull(), contentType: text("content_type").notNull(), size: integer("size").notNull(), documentType: text("document_type").notNull().default("minutes"),
+  uploadedBy: text("uploaded_by").notNull().references(() => appUsers.id, { onDelete: "restrict" }), createdAt: text("created_at").notNull(),
+});

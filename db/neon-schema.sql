@@ -281,6 +281,31 @@ CREATE TABLE IF NOT EXISTS decisions (
   created_at TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS meetings (
+  id TEXT PRIMARY KEY, community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+  title TEXT NOT NULL, meeting_type TEXT NOT NULL DEFAULT 'Olağan Genel Kurul', meeting_at TEXT NOT NULL,
+  location TEXT NOT NULL, agenda TEXT NOT NULL, notes TEXT, status TEXT NOT NULL DEFAULT 'planned',
+  created_by TEXT NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS meeting_attendees (
+  id TEXT PRIMARY KEY, meeting_id TEXT NOT NULL REFERENCES meetings(id) ON DELETE CASCADE, user_id TEXT,
+  name TEXT NOT NULL, unit TEXT, status TEXT NOT NULL DEFAULT 'invited', updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS meeting_decisions (
+  id TEXT PRIMARY KEY, meeting_id TEXT NOT NULL REFERENCES meetings(id) ON DELETE CASCADE,
+  decision_no TEXT NOT NULL, decision_date TEXT NOT NULL, title TEXT NOT NULL, body TEXT NOT NULL,
+  created_by TEXT NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT, created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS meeting_documents (
+  id TEXT PRIMARY KEY, community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+  meeting_id TEXT REFERENCES meetings(id) ON DELETE CASCADE, object_key TEXT NOT NULL UNIQUE,
+  file_name TEXT NOT NULL, content_type TEXT NOT NULL, size INTEGER NOT NULL, document_type TEXT NOT NULL DEFAULT 'minutes',
+  uploaded_by TEXT NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT, created_at TEXT NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_members_user ON members(user_id);
 CREATE INDEX IF NOT EXISTS idx_residents_community ON residents(community_id);
 CREATE INDEX IF NOT EXISTS idx_dues_community ON dues(community_id);
@@ -296,6 +321,10 @@ CREATE INDEX IF NOT EXISTS idx_announcements_community ON announcements(communit
 CREATE INDEX IF NOT EXISTS idx_announcement_reads_announcement ON announcement_reads(announcement_id, read_at);
 CREATE INDEX IF NOT EXISTS idx_announcement_attachments_community ON announcement_attachments(community_id);
 CREATE INDEX IF NOT EXISTS idx_decisions_community ON decisions(community_id);
+CREATE INDEX IF NOT EXISTS idx_meetings_community ON meetings(community_id, meeting_at);
+CREATE INDEX IF NOT EXISTS idx_meeting_attendees_meeting ON meeting_attendees(meeting_id, status);
+CREATE INDEX IF NOT EXISTS idx_meeting_decisions_meeting ON meeting_decisions(meeting_id, decision_date);
+CREATE INDEX IF NOT EXISTS idx_meeting_documents_meeting ON meeting_documents(meeting_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_invitations_community ON invitations(community_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_auth_tokens_user ON auth_tokens(user_id, kind);

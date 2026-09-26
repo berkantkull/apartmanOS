@@ -5,6 +5,7 @@ import { ensurePaymentSchema, handlePaymentAction, loadPaymentData } from "./pay
 import { handleAnnouncementAction, loadAnnouncements } from "./announcements";
 import { handleFinanceAction, loadFinanceData } from "./finances";
 import { handleRequestAction, loadRequests } from "./requests";
+import { handleMeetingAction, loadMeetings } from "./meetings";
 
 type Role = "owner" | "manager" | "resident";
 type Membership = { community_id:string; role:Role; name:string; block_count:number; unit_count:number; unit:string|null };
@@ -37,6 +38,7 @@ export async function GET(request:Request){
   const announcementData=await loadAnnouncements({communityId,role:membership.role,unit:membership.unit,userId:user.userId});
   const financeData=await loadFinanceData({communityId,role:membership.role,userId:user.userId});
   const requestData=await loadRequests({communityId,role:membership.role,unit:membership.unit,userId:user.userId,displayName:user.displayName});
+  const meetingData=await loadMeetings({communityId,role:membership.role,userId:user.userId,displayName:user.displayName});
   const communityQuery=managerView?"SELECT id,name,block_count,unit_count,monthly_due,period,invite_code,auto_due_enabled,due_day,late_interest_rate,payment_link FROM communities WHERE id = ?":"SELECT id,name,block_count,unit_count,monthly_due,period,'' AS invite_code,auto_due_enabled,due_day,late_interest_rate,payment_link FROM communities WHERE id = ?";
   const memberQuery=membership.role==="owner"?"SELECT id,user_id,display_name,email,role,unit,phone,joined_at FROM members WHERE community_id = ? ORDER BY joined_at":"SELECT id,user_id,display_name,'' AS email,role,unit,phone,joined_at FROM members WHERE community_id = ? ORDER BY joined_at";
   const residentQuery=managerView?"SELECT id,name,unit,phone,occupancy,created_at FROM residents WHERE community_id = ? ORDER BY unit,name":"SELECT id,name,unit,NULL AS phone,occupancy,created_at FROM residents WHERE community_id = ? ORDER BY unit,name";
@@ -50,7 +52,7 @@ export async function GET(request:Request){
   const manualResidents=residentsResult.results.map(resident=>({...resident,source:"manual" as const}));
   const accountResidents=membersResult.results.filter(member=>member.role==="resident").filter(member=>!manualResidents.some(resident=>resident.name.toLocaleLowerCase("tr")===member.display_name.toLocaleLowerCase("tr")&&resident.unit===String(member.unit??""))).map(member=>({id:`member:${member.id}`,name:member.display_name,unit:member.unit||"Belirtilmedi",phone:managerView?member.phone:null,occupancy:"Kayıtlı kullanıcı",created_at:member.joined_at,source:"member" as const}));
   const visibleResidents=[...manualResidents,...accountResidents].sort((a,b)=>a.unit.localeCompare(b.unit,"tr",{numeric:true}));
-  return NextResponse.json({user,membership,communities:allMemberships,community,members:membersResult.results,residents:visibleResidents,dues:paymentData.dues,payments:paymentData.payments,transfers:paymentData.transfers,expenses:financeData.expenses,incomes:financeData.incomes,financeCategories:financeData.categories,requests:requestData,announcements:announcementData,decisions:decisions.results,notifications:notifications.results,invitations:invitations.results});
+  return NextResponse.json({user,membership,communities:allMemberships,community,members:membersResult.results,residents:visibleResidents,dues:paymentData.dues,payments:paymentData.payments,transfers:paymentData.transfers,expenses:financeData.expenses,incomes:financeData.incomes,financeCategories:financeData.categories,requests:requestData,announcements:announcementData,meetings:meetingData,decisions:decisions.results,notifications:notifications.results,invitations:invitations.results});
 }
 
 export async function POST(request:Request){
@@ -81,6 +83,7 @@ export async function POST(request:Request){
   const financeResponse=await handleFinanceAction(action,body,{communityId,role,userId:user.userId});if(financeResponse)return financeResponse;
   const requestResponse=await handleRequestAction(action,body,{communityId,role,unit:membership.unit,userId:user.userId,displayName:user.displayName});if(requestResponse)return requestResponse;
   const announcementResponse=await handleAnnouncementAction(action,body,{communityId,role,unit:membership.unit,userId:user.userId});if(announcementResponse)return announcementResponse;
+  const meetingResponse=await handleMeetingAction(action,body,{communityId,role,userId:user.userId,displayName:user.displayName});if(meetingResponse)return meetingResponse;
   if(action==="markNotificationsRead"){await db.prepare("UPDATE notifications SET read_at=? WHERE community_id=? AND user_id=? AND read_at IS NULL").bind(createdAt,communityId,user.userId).run();return NextResponse.json({ok:true});}
   if(action==="updateMemberRole"){if(role!=="owner")return fail("Bu işlem yalnızca yönetim sahibine açık.",403);const nextRole=clean(body.role,20);if(!["manager","resident"].includes(nextRole))return fail("Geçersiz rol.");await db.prepare("UPDATE members SET role=? WHERE id=? AND community_id=? AND role!='owner'").bind(nextRole,clean(body.id,80),communityId).run();return NextResponse.json({ok:true});}
   if(!canManage(role))return fail("Bu işlem için yönetici yetkisi gerekiyor.",403);
