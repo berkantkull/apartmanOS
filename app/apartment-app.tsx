@@ -64,6 +64,7 @@ const roleName:Record<AppRole,string>={owner:"Yönetim sahibi",manager:"Yönetic
 export default function ApartmentApp({user,initialInvite=""}:{user:User;initialInvite?:string}){
   const [data,setData]=useState<AppData|null>(null);
   const [loading,setLoading]=useState(true);
+  const [loadError,setLoadError]=useState("");
   const [page,setPage]=useState<Page>("dashboard");
   const [modal,setModal]=useState<Modal>(null);
   const [activeCommunityId,setActiveCommunityId]=useState("");
@@ -73,15 +74,15 @@ export default function ApartmentApp({user,initialInvite=""}:{user:User;initialI
   const [transferDue,setTransferDue]=useState<Due|null>(null);
   const canManage=data?.membership?.role==="owner"||data?.membership?.role==="manager";
 
-  async function load(communityId=activeCommunityId){setLoading(true);try{const suffix=communityId?`?communityId=${encodeURIComponent(communityId)}`:'';const response=await fetch(`/api/app${suffix}`,{cache:"no-store"});const json=await response.json();if(!response.ok)throw new Error(json.error);setData(json);if(json.membership?.community_id)setActiveCommunityId(json.membership.community_id)}catch(error){toast.error(error instanceof Error?error.message:"Veriler yüklenemedi.")}finally{setLoading(false)}}
-  async function action(payload:Record<string,unknown>,success?:string){const response=await fetch("/api/app",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({...payload,communityId:activeCommunityId})});const json=await response.json();if(!response.ok)throw new Error(json.error||"İşlem tamamlanamadı.");if(success)toast.success(success);await load(String(json.communityId||activeCommunityId));return json}
+  async function load(communityId=activeCommunityId){setLoading(true);setLoadError("");try{const suffix=communityId?`?communityId=${encodeURIComponent(communityId)}`:'';const response=await fetch(`/api/app${suffix}`,{cache:"no-store"}),text=await response.text();let json:AppData&{error?:string};try{json=text?JSON.parse(text):({} as AppData)}catch{throw new Error("Sunucudan geçerli bir yanıt alınamadı.")}if(!response.ok)throw new Error(json.error||"Yönetim bilgileri yüklenemedi.");setData(json);if(json.membership?.community_id)setActiveCommunityId(json.membership.community_id)}catch(error){const message=error instanceof Error?error.message:"Veriler yüklenemedi.";setLoadError(message);toast.error(message)}finally{setLoading(false)}}
+  async function action(payload:Record<string,unknown>,success?:string){const response=await fetch("/api/app",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({...payload,communityId:activeCommunityId})}),text=await response.text();let json:Record<string,string>={};try{json=text?JSON.parse(text):{}}catch{throw new Error("Sunucudan geçerli bir yanıt alınamadı.")}if(!response.ok)throw new Error(json.error||"İşlem tamamlanamadı.");if(success)toast.success(success);await load(String(json.communityId||activeCommunityId));return json}
   async function logout(){await fetch("/api/auth/email",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({action:"logout"})});window.location.reload()}
   useEffect(()=>{
     let active=true;
     fetch("/api/app",{cache:"no-store"})
-      .then(async response=>{const json=await response.json();if(!response.ok)throw new Error(json.error);return json})
+      .then(async response=>{const text=await response.text();let json:AppData&{error?:string};try{json=text?JSON.parse(text):({} as AppData)}catch{throw new Error("Sunucudan geçerli bir yanıt alınamadı.")}if(!response.ok)throw new Error(json.error||"Yönetim bilgileri yüklenemedi.");return json})
       .then(json=>{if(active){setData(json);if(json.membership?.community_id)setActiveCommunityId(json.membership.community_id)}})
-      .catch(error=>toast.error(error instanceof Error?error.message:"Veriler yüklenemedi."))
+      .catch(error=>{const message=error instanceof Error?error.message:"Veriler yüklenemedi.";if(active)setLoadError(message);toast.error(message)})
       .finally(()=>{if(active)setLoading(false)});
     return ()=>{active=false};
   },[]);
@@ -92,6 +93,7 @@ export default function ApartmentApp({user,initialInvite=""}:{user:User;initialI
   },[data?.notifications]);
 
   if(loading)return <LoadingScreen/>;
+  if(loadError&&!data)return <AppLoadError user={user} message={loadError} onRetry={()=>load()} onLogout={logout}/>;
   if(!data?.membership){const accountInvite=initialInvite||(data?.invitations||[]).find(item=>item.status==='pending')?.token||'';return <WelcomeSetup user={user} invite={accountInvite} invitations={data?.invitations||[]} onLogout={logout} onAction={async p=>{await action(p);toast.success("Apartman hesabınıza bağlandı.")}}/>}
   const community=data.community!;
   const dues=data.dues||[], payments=data.payments||[], transfers=data.transfers||[], expenses=data.expenses||[], incomes=data.incomes||[], financeCategories=data.financeCategories||[], requests=data.requests||[], announcements=data.announcements||[], meetings=data.meetings||[], properties=data.properties||{blocks:[],units:[],parkingSpots:[],vehicles:[],vehicleEvents:[]};
@@ -137,6 +139,10 @@ function AppSidebar({community,communities,nav,page,unpaidCount,unreadAnnounceme
 }
 
 function LoadingScreen(){return <main className="loading-screen"><LogoMark className="loading-mark"/><p>apartmanOS hazırlanıyor…</p></main>}
+
+function AppLoadError({user,message,onRetry,onLogout}:{user:User;message:string;onRetry:()=>void;onLogout:()=>Promise<void>}){
+  return <main className="setup-page"><section className="setup-card load-error-card"><div className="setup-brand"><LogoMark className="setup-logo"/><div><b>apartmanOS</b><small>{user.email}</small></div></div><span className="load-error-icon"><AlertTriangle/></span><h1>Yönetim bilgileri yüklenemedi</h1><p>{message} Mevcut apartmanınız ve kayıtlarınız korunuyor; yeni bir apartman oluşturmanız gerekmiyor.</p><div className="load-error-actions"><Button onClick={onRetry}>Tekrar dene</Button><Button variant="outline" onClick={onLogout}><LogOut/>Çıkış yap</Button></div></section><Toaster richColors/></main>
+}
 
 function WelcomeSetup({user,invite,invitations,onLogout,onAction}:{user:User;invite:string;invitations:Invitation[];onLogout:()=>Promise<void>;onAction:(p:Record<string,unknown>)=>Promise<void>}){
   const [tab,setTab]=useState<'create'|'join'>(invite?'join':'create');const [busy,setBusy]=useState(false);

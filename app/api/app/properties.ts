@@ -39,7 +39,9 @@ export async function loadPropertyData(context:Context){
     db.prepare("SELECT p.*,u.unit_no,b.name AS block_name FROM parking_spots p LEFT JOIN property_units u ON u.id=p.unit_id LEFT JOIN property_blocks b ON b.id=u.block_id WHERE p.community_id=? ORDER BY p.code").bind(context.communityId).all<Record<string,unknown>>(),
     db.prepare("SELECT v.*,u.unit_no,b.name AS block_name,p.code AS parking_code FROM vehicles v LEFT JOIN property_units u ON u.id=v.unit_id LEFT JOIN property_blocks b ON b.id=u.block_id LEFT JOIN parking_spots p ON p.id=v.parking_spot_id WHERE v.community_id=? AND v.active=1 ORDER BY v.vehicle_type,v.plate").bind(context.communityId).all<Record<string,unknown>>(),
     db.prepare("SELECT e.*,v.plate FROM vehicle_events e JOIN vehicles v ON v.id=e.vehicle_id WHERE e.community_id=? ORDER BY e.occurred_at DESC LIMIT 100").bind(context.communityId).all<Record<string,unknown>>(),
-    db.prepare("SELECT unit,SUM(CASE WHEN status!='paid' THEN amount+interest_amount ELSE 0 END) AS debt FROM dues WHERE community_id=? GROUP BY unit").bind(context.communityId).all<{unit:string;debt:number}>(),
+    db.prepare(`SELECT d.unit,SUM(GREATEST(d.amount-COALESCE(p.paid_amount,CASE WHEN d.status='paid' THEN d.amount ELSE 0 END),0)) AS debt
+      FROM dues d LEFT JOIN (SELECT due_id,SUM(amount) AS paid_amount FROM payments WHERE status='confirmed' GROUP BY due_id) p ON p.due_id=d.id
+      WHERE d.community_id=? GROUP BY d.unit`).bind(context.communityId).all<{unit:string;debt:number}>(),
     db.prepare("SELECT p.id,p.unit,p.resident_name,p.amount,p.method,p.reference,p.paid_at FROM payments p WHERE p.community_id=? AND p.status='confirmed' ORDER BY p.paid_at DESC").bind(context.communityId).all<Record<string,unknown>>(),
   ]);
   const managerView=canManage(context.role)||context.role==="staff",securityView=context.role==="security";
