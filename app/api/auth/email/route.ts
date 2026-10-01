@@ -56,7 +56,7 @@ export async function POST(request: Request) {
     await db.prepare("INSERT INTO app_users (id, email, display_name, phone, password_hash, password_salt, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
       .bind(userId, email, displayName, phone, credentials.hash, credentials.salt, new Date().toISOString()).run();
     const session = await createSession(userId);
-    return setSessionCookie(request, json({ ok: true }, 201), session.token);
+    return setSessionCookie(request, json({ ok: true, redirectTo: "/giris" }, 201), session.token);
   }
 
   if (action === "login") {
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     }
     await db.prepare("DELETE FROM auth_limits WHERE key = ?").bind(limitKey).run();
     const session = await createSession(user.id);
-    return setSessionCookie(request, json({ ok: true }), session.token);
+    return setSessionCookie(request, json({ ok: true, redirectTo: "/giris" }), session.token);
   }
 
   return json({ error: "Bilinmeyen işlem." }, 400);

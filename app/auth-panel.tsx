@@ -21,10 +21,10 @@ export default function AuthPanel({ initialError = "", invite = "" }: { initialE
     try {
       const response = await fetch("/api/auth/email", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
       const responseText = await response.text();
-      let result: { error?: string } = {};
+      let result: { error?: string; redirectTo?: string } = {};
       try { result = responseText ? JSON.parse(responseText) : {}; } catch { /* Sunucu hatalarında anlaşılır varsayılan mesajı göster. */ }
       if (!response.ok) throw new Error(result.error || "İşlem tamamlanamadı.");
-      window.location.reload();
+      window.location.assign(result.redirectTo || `/giris${invite ? `?davet=${encodeURIComponent(invite)}` : ""}`);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "İşlem tamamlanamadı.");
       setBusy(false);

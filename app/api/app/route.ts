@@ -22,7 +22,14 @@ const inviteCode=()=>Array.from(crypto.getRandomValues(new Uint8Array(7)),n=>"AB
 const canManage=(role:Role)=>role==="owner"||role==="manager";
 
 async function memberships(userId:string){
-  return (await getDatabase().prepare(`SELECT m.community_id, m.role, m.unit, c.name, c.block_count, c.unit_count
+  const db=getDatabase();
+  const missingOwnerMemberships=await db.prepare(`SELECT c.id AS community_id,u.email,u.display_name,u.phone,c.created_at
+    FROM communities c JOIN app_users u ON u.id=c.owner_user_id
+    WHERE c.owner_user_id=? AND NOT EXISTS (
+      SELECT 1 FROM members m WHERE m.community_id=c.id AND m.user_id=c.owner_user_id
+    )`).bind(userId).all<{community_id:string;email:string;display_name:string;phone:string|null;created_at:string}>();
+  if(missingOwnerMemberships.results.length)await db.batch(missingOwnerMemberships.results.map(item=>db.prepare("INSERT INTO members (id,community_id,user_id,email,display_name,role,unit,phone,joined_at) VALUES (?,?,?,?,?,'owner',NULL,?,?) ON CONFLICT (community_id,user_id) DO NOTHING").bind(crypto.randomUUID(),item.community_id,userId,item.email,item.display_name,item.phone,item.created_at)));
+  return (await db.prepare(`SELECT m.community_id, m.role, m.unit, c.name, c.block_count, c.unit_count
     FROM members m JOIN communities c ON c.id = m.community_id
     WHERE m.user_id = ? ORDER BY m.joined_at`).bind(userId).all<Membership>()).results;
 }
@@ -31,7 +38,12 @@ export async function GET(request:Request){
   const user=await getSessionUser();
   if(!user)return fail("Oturum açmanız gerekiyor.",401);
   const allMemberships=await memberships(user.userId);
-  if(!allMemberships.length)return NextResponse.json({user,membership:null,communities:[]});
+  if(!allMemberships.length){
+    const invitations=await getDatabase().prepare(`SELECT i.id,i.email,i.unit,i.phone,i.status,i.token,i.created_at,i.accepted_at,c.name AS community_name
+      FROM invitations i JOIN communities c ON c.id=i.community_id
+      WHERE LOWER(i.email)=? AND i.status='pending' ORDER BY i.created_at DESC`).bind(normalizeEmail(user.email)).all();
+    return NextResponse.json({user,membership:null,communities:[],invitations:invitations.results});
+  }
   const requested=new URL(request.url).searchParams.get("communityId");
   const membership=allMemberships.find(item=>item.community_id===requested)||allMemberships[0];
   const db=getDatabase(), communityId=membership.community_id, managerView=canManage(membership.role);
@@ -79,7 +91,7 @@ export async function POST(request:Request){
     const statements=[db.prepare("INSERT INTO members (id,community_id,user_id,email,display_name,role,unit,phone,joined_at) VALUES (?,?,?,?,?,'resident',?,?,?)").bind(id(),community.id,user.userId,user.email,user.displayName,unit,phone,createdAt),db.prepare("UPDATE app_users SET phone=COALESCE(NULLIF(?,''),phone) WHERE id=?").bind(phone,user.userId)];if(invitation)statements.push(db.prepare("UPDATE invitations SET status='joined',accepted_at=? WHERE id=?").bind(createdAt,invitation.id));await db.batch(statements);
     return NextResponse.json({ok:true,communityId:community.id});
   }
-  if(!membership)return fail("Önce bir apartman oluşturun veya davetle katılın.",403);
+  if(!membership)return fail("Oturumunuz açık ancak hesabınız henüz bir apartmana bağlı değil. Yeni bir apartman oluşturun veya yönetici davetini kabul edin.",403);
   const communityId=membership.community_id,role=membership.role;
   const paymentResponse=await handlePaymentAction(action,body,{communityId,role,unit:membership.unit,userId:user.userId});if(paymentResponse)return paymentResponse;
   const financeResponse=await handleFinanceAction(action,body,{communityId,role,userId:user.userId});if(financeResponse)return financeResponse;
