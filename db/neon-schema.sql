@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS members (
   user_id TEXT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
   email TEXT NOT NULL,
   display_name TEXT NOT NULL,
-  role TEXT NOT NULL DEFAULT 'resident' CHECK (role IN ('owner', 'manager', 'resident')),
+  role TEXT NOT NULL DEFAULT 'resident' CHECK (role IN ('owner', 'manager', 'resident', 'staff', 'security')),
   unit TEXT,
   phone TEXT,
   joined_at TEXT NOT NULL,
@@ -306,6 +306,38 @@ CREATE TABLE IF NOT EXISTS meeting_documents (
   uploaded_by TEXT NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT, created_at TEXT NOT NULL
 );
 
+ALTER TABLE members DROP CONSTRAINT IF EXISTS members_role_check;
+
+CREATE TABLE IF NOT EXISTS property_blocks (
+  id TEXT PRIMARY KEY, community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE, name TEXT NOT NULL,
+  floor_count INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL, UNIQUE(community_id,name)
+);
+CREATE TABLE IF NOT EXISTS property_units (
+  id TEXT PRIMARY KEY, community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE, block_id TEXT NOT NULL REFERENCES property_blocks(id) ON DELETE CASCADE,
+  unit_no TEXT NOT NULL, floor TEXT, owner_name TEXT, owner_phone TEXT, owner_email TEXT, tenant_name TEXT, tenant_phone TEXT, tenant_email TEXT,
+  resident_count INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL, updated_at TEXT NOT NULL, UNIQUE(community_id,block_id,unit_no)
+);
+CREATE TABLE IF NOT EXISTS unit_documents (
+  id TEXT PRIMARY KEY, community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE, unit_id TEXT NOT NULL REFERENCES property_units(id) ON DELETE CASCADE,
+  object_key TEXT NOT NULL UNIQUE, file_name TEXT NOT NULL, content_type TEXT NOT NULL, size INTEGER NOT NULL,
+  uploaded_by TEXT NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT, created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS parking_spots (
+  id TEXT PRIMARY KEY, community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE, code TEXT NOT NULL, location TEXT,
+  unit_id TEXT REFERENCES property_units(id) ON DELETE SET NULL, status TEXT NOT NULL DEFAULT 'available', created_at TEXT NOT NULL, UNIQUE(community_id,code)
+);
+CREATE TABLE IF NOT EXISTS vehicles (
+  id TEXT PRIMARY KEY, community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE, unit_id TEXT REFERENCES property_units(id) ON DELETE SET NULL,
+  parking_spot_id TEXT REFERENCES parking_spots(id) ON DELETE SET NULL, plate TEXT NOT NULL, brand_model TEXT, color TEXT, owner_name TEXT NOT NULL,
+  vehicle_type TEXT NOT NULL DEFAULT 'resident', qr_token TEXT NOT NULL UNIQUE, valid_until TEXT, inside INTEGER NOT NULL DEFAULT 0,
+  active INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL, UNIQUE(community_id,plate)
+);
+CREATE TABLE IF NOT EXISTS vehicle_events (
+  id TEXT PRIMARY KEY, community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE, vehicle_id TEXT NOT NULL REFERENCES vehicles(id) ON DELETE CASCADE,
+  event_type TEXT NOT NULL, gate_name TEXT, occurred_at TEXT NOT NULL, recorded_by TEXT NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT,
+  recorded_by_name TEXT NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_members_user ON members(user_id);
 CREATE INDEX IF NOT EXISTS idx_residents_community ON residents(community_id);
 CREATE INDEX IF NOT EXISTS idx_dues_community ON dues(community_id);
@@ -325,6 +357,12 @@ CREATE INDEX IF NOT EXISTS idx_meetings_community ON meetings(community_id, meet
 CREATE INDEX IF NOT EXISTS idx_meeting_attendees_meeting ON meeting_attendees(meeting_id, status);
 CREATE INDEX IF NOT EXISTS idx_meeting_decisions_meeting ON meeting_decisions(meeting_id, decision_date);
 CREATE INDEX IF NOT EXISTS idx_meeting_documents_meeting ON meeting_documents(meeting_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_property_blocks_community ON property_blocks(community_id, name);
+CREATE INDEX IF NOT EXISTS idx_property_units_community ON property_units(community_id, block_id, unit_no);
+CREATE INDEX IF NOT EXISTS idx_unit_documents_unit ON unit_documents(unit_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_parking_spots_community ON parking_spots(community_id, status);
+CREATE INDEX IF NOT EXISTS idx_vehicles_community ON vehicles(community_id, plate);
+CREATE INDEX IF NOT EXISTS idx_vehicle_events_community ON vehicle_events(community_id, occurred_at);
 CREATE INDEX IF NOT EXISTS idx_invitations_community ON invitations(community_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_auth_tokens_user ON auth_tokens(user_id, kind);

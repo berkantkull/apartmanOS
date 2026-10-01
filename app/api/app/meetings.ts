@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDatabase } from "@/db";
 
-type Role="owner"|"manager"|"resident";
+type Role="owner"|"manager"|"resident"|"staff"|"security";
 type Context={communityId:string;role:Role;userId:string;displayName:string};
 const fail=(message:string,status=400)=>NextResponse.json({error:message},{status});
 const clean=(value:unknown,max=300)=>String(value??"").trim().slice(0,max);
@@ -56,7 +56,7 @@ export async function handleMeetingAction(action:string,body:Record<string,unkno
     const title=clean(body.title,140),text=clean(body.body,5000),decisionNo=clean(body.decisionNo,50),decisionDate=clean(body.decisionDate,20);if(!title||!text||!decisionNo||!decisionDate)return fail("Karar başlığı, metni, numarası ve tarihi gerekli.");const decisionId=id();await db.batch([db.prepare("INSERT INTO meeting_decisions (id,meeting_id,decision_no,decision_date,title,body,created_by,created_at) VALUES (?,?,?,?,?,?,?,?)").bind(decisionId,meetingId,decisionNo,decisionDate,title,text,context.userId,createdAt),db.prepare("INSERT INTO decisions (id,community_id,title,body,decision_no,created_by,created_at) VALUES (?,?,?,?,?,?,?)").bind(decisionId,context.communityId,title,text,decisionNo,context.userId,decisionDate)]);return NextResponse.json({ok:true});
   }
   if(action==="attachMeetingDocument"){
-    const documentId=clean(body.documentId,80);const result=await db.prepare("UPDATE meeting_documents SET meeting_id=? WHERE id=? AND community_id=? AND uploaded_by=? AND meeting_id IS NULL").bind(meetingId,documentId,context.communityId,context.userId).run();if(!result.meta.changes)return fail("Toplantı belgesi bulunamadı.",404);return NextResponse.json({ok:true});
+    const documentId=clean(body.documentId,80);if(!await db.prepare("SELECT id FROM meeting_documents WHERE id=? AND community_id=? AND uploaded_by=? AND meeting_id IS NULL").bind(documentId,context.communityId,context.userId).first())return fail("Toplantı belgesi bulunamadı.",404);await db.prepare("UPDATE meeting_documents SET meeting_id=? WHERE id=? AND community_id=?").bind(meetingId,documentId,context.communityId).run();return NextResponse.json({ok:true});
   }
   if(action==="sendMeetingReminder"){
     const when=new Intl.DateTimeFormat('tr-TR',{dateStyle:'long',timeStyle:'short',timeZone:'Europe/Istanbul'}).format(new Date(meeting.meeting_at));await notifyMembers(context.communityId,context.userId,`Toplantı hatırlatması: ${meeting.title}`,`${when} · ${meeting.location}`,`meeting:${meetingId}:reminder:${createdAt}`);return NextResponse.json({ok:true});

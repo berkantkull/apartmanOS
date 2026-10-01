@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDatabase } from "@/db";
 
-type Role="owner"|"manager"|"resident";
+type Role="owner"|"manager"|"resident"|"staff"|"security";
 type Context={communityId:string;role:Role;unit:string|null;userId:string};
 type AnnouncementRow={id:string;title:string;body:string;kind:string;category:string;target_scope:"all"|"block"|"units";target_value:string|null;publish_at:string|null;is_urgent:number;archived_at:string|null;attachment_id:string|null;created_at:string;file_name:string|null;content_type:string|null;size:number|null};
 type Member={user_id:string;display_name:string;unit:string|null};

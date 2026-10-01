@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDatabase } from "@/db";
 
-type Role = "owner"|"manager"|"resident";
+type Role = "owner"|"manager"|"resident"|"staff"|"security";
 type Context = { communityId:string; role:Role; unit:string|null; userId:string };
 type DueRow = { id:string; resident_name:string; unit:string; amount:number; status:"pending"|"paid"|"late"; due_date:string; period:string; kind:"monthly"|"extra"; note:string|null; interest_rate:number; created_at:string };
 type PaymentRow = { id:string; due_id:string; resident_name:string; unit:string; amount:number; method:string; reference:string|null; status:string; paid_at:string; created_at:string };

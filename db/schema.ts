@@ -47,7 +47,7 @@ export const members = pgTable("members", {
   userId: text("user_id").notNull(),
   email: text("email").notNull(),
   displayName: text("display_name").notNull(),
-  role: text("role", { enum: ["owner", "manager", "resident"] }).notNull().default("resident"),
+  role: text("role", { enum: ["owner", "manager", "resident", "staff", "security"] }).notNull().default("resident"),
   unit: text("unit"),
   phone: text("phone"),
   joinedAt: text("joined_at").notNull(),
@@ -307,4 +307,35 @@ export const meetingDocuments = pgTable("meeting_documents", {
   meetingId: text("meeting_id").references(() => meetings.id, { onDelete: "cascade" }), objectKey: text("object_key").notNull().unique(),
   fileName: text("file_name").notNull(), contentType: text("content_type").notNull(), size: integer("size").notNull(), documentType: text("document_type").notNull().default("minutes"),
   uploadedBy: text("uploaded_by").notNull().references(() => appUsers.id, { onDelete: "restrict" }), createdAt: text("created_at").notNull(),
+});
+
+export const propertyBlocks = pgTable("property_blocks", {
+  id: text("id").primaryKey(), communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
+  name: text("name").notNull(), floorCount: integer("floor_count").notNull().default(1), createdAt: text("created_at").notNull(),
+}, table => [uniqueIndex("idx_property_blocks_unique").on(table.communityId, table.name)]);
+
+export const propertyUnits = pgTable("property_units", {
+  id: text("id").primaryKey(), communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }), blockId: text("block_id").notNull().references(() => propertyBlocks.id, { onDelete: "cascade" }),
+  unitNo: text("unit_no").notNull(), floor: text("floor"), ownerName: text("owner_name"), ownerPhone: text("owner_phone"), ownerEmail: text("owner_email"),
+  tenantName: text("tenant_name"), tenantPhone: text("tenant_phone"), tenantEmail: text("tenant_email"), residentCount: integer("resident_count").notNull().default(0), createdAt: text("created_at").notNull(), updatedAt: text("updated_at").notNull(),
+});
+
+export const unitDocuments = pgTable("unit_documents", {
+  id: text("id").primaryKey(), communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }), unitId: text("unit_id").notNull().references(() => propertyUnits.id, { onDelete: "cascade" }),
+  objectKey: text("object_key").notNull().unique(), fileName: text("file_name").notNull(), contentType: text("content_type").notNull(), size: integer("size").notNull(), uploadedBy: text("uploaded_by").notNull().references(() => appUsers.id, { onDelete: "restrict" }), createdAt: text("created_at").notNull(),
+});
+
+export const parkingSpots = pgTable("parking_spots", {
+  id: text("id").primaryKey(), communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }), code: text("code").notNull(), location: text("location"),
+  unitId: text("unit_id").references(() => propertyUnits.id, { onDelete: "set null" }), status: text("status").notNull().default("available"), createdAt: text("created_at").notNull(),
+});
+
+export const vehicles = pgTable("vehicles", {
+  id: text("id").primaryKey(), communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }), unitId: text("unit_id").references(() => propertyUnits.id, { onDelete: "set null" }), parkingSpotId: text("parking_spot_id").references(() => parkingSpots.id, { onDelete: "set null" }),
+  plate: text("plate").notNull(), brandModel: text("brand_model"), color: text("color"), ownerName: text("owner_name").notNull(), vehicleType: text("vehicle_type").notNull().default("resident"), qrToken: text("qr_token").notNull().unique(), validUntil: text("valid_until"), inside: integer("inside").notNull().default(0), active: integer("active").notNull().default(1), createdAt: text("created_at").notNull(),
+});
+
+export const vehicleEvents = pgTable("vehicle_events", {
+  id: text("id").primaryKey(), communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }), vehicleId: text("vehicle_id").notNull().references(() => vehicles.id, { onDelete: "cascade" }),
+  eventType: text("event_type").notNull(), gateName: text("gate_name"), occurredAt: text("occurred_at").notNull(), recordedBy: text("recorded_by").notNull().references(() => appUsers.id, { onDelete: "restrict" }), recordedByName: text("recorded_by_name").notNull(),
 });

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDatabase } from "@/db";
 
-type Role="owner"|"manager"|"resident";
+type Role="owner"|"manager"|"resident"|"staff"|"security";
 type Context={communityId:string;role:Role;userId:string};
 const fail=(message:string,status=400)=>NextResponse.json({error:message},{status});
 const clean=(value:unknown,max=200)=>String(value??"").trim().slice(0,max);

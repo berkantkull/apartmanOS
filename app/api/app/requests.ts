@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDatabase } from "@/db";
 
-type Role="owner"|"manager"|"resident";
+type Role="owner"|"manager"|"resident"|"staff"|"security";
 type Context={communityId:string;role:Role;unit:string|null;userId:string;displayName:string};
 type RequestRow={id:string;creator_user_id:string;creator_name:string;unit:string|null;request_type:"fault"|"request";category:string;title:string;description:string;priority:"low"|"normal"|"high"|"urgent";status:"new"|"reviewing"|"in_progress"|"resolved"|"cancelled";manager_note:string|null;attachment_id:string|null;resolution_attachment_id:string|null;created_at:string;updated_at:string;resolved_at:string|null;initial_file_name:string|null;initial_content_type:string|null;initial_size:number|null;resolution_file_name:string|null;resolution_content_type:string|null;resolution_size:number|null};
 const fail=(message:string,status=400)=>NextResponse.json({error:message},{status});
