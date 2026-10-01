@@ -339,3 +339,25 @@ export const vehicleEvents = pgTable("vehicle_events", {
   id: text("id").primaryKey(), communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }), vehicleId: text("vehicle_id").notNull().references(() => vehicles.id, { onDelete: "cascade" }),
   eventType: text("event_type").notNull(), gateName: text("gate_name"), occurredAt: text("occurred_at").notNull(), recordedBy: text("recorded_by").notNull().references(() => appUsers.id, { onDelete: "restrict" }), recordedByName: text("recorded_by_name").notNull(),
 });
+
+export const packageDeliveries = pgTable("package_deliveries", {
+  id: text("id").primaryKey(),
+  communityId: text("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
+  unitId: text("unit_id").references(() => propertyUnits.id, { onDelete: "set null" }),
+  residentUserId: text("resident_user_id").references(() => appUsers.id, { onDelete: "set null" }),
+  residentName: text("resident_name").notNull(),
+  unitLabel: text("unit_label").notNull(),
+  courierCompany: text("courier_company").notNull(),
+  trackingNumber: text("tracking_number"),
+  arrivedAt: text("arrived_at").notNull(),
+  status: text("status", { enum: ["waiting", "delivered"] }).notNull().default("waiting"),
+  recipientName: text("recipient_name"),
+  deliveredAt: text("delivered_at"),
+  notes: text("notes"),
+  reminderCount: integer("reminder_count").notNull().default(0),
+  lastReminderAt: text("last_reminder_at"),
+  createdBy: text("created_by").notNull().references(() => appUsers.id, { onDelete: "restrict" }),
+  createdByName: text("created_by_name").notNull(),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});

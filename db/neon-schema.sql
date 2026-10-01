@@ -338,6 +338,15 @@ CREATE TABLE IF NOT EXISTS vehicle_events (
   recorded_by_name TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS package_deliveries (
+  id TEXT PRIMARY KEY, community_id TEXT NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+  unit_id TEXT REFERENCES property_units(id) ON DELETE SET NULL, resident_user_id TEXT REFERENCES app_users(id) ON DELETE SET NULL,
+  resident_name TEXT NOT NULL, unit_label TEXT NOT NULL, courier_company TEXT NOT NULL, tracking_number TEXT,
+  arrived_at TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'waiting', recipient_name TEXT, delivered_at TEXT, notes TEXT,
+  reminder_count INTEGER NOT NULL DEFAULT 0, last_reminder_at TEXT, created_by TEXT NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT,
+  created_by_name TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_members_user ON members(user_id);
 CREATE INDEX IF NOT EXISTS idx_residents_community ON residents(community_id);
 CREATE INDEX IF NOT EXISTS idx_dues_community ON dues(community_id);
@@ -363,6 +372,8 @@ CREATE INDEX IF NOT EXISTS idx_unit_documents_unit ON unit_documents(unit_id, cr
 CREATE INDEX IF NOT EXISTS idx_parking_spots_community ON parking_spots(community_id, status);
 CREATE INDEX IF NOT EXISTS idx_vehicles_community ON vehicles(community_id, plate);
 CREATE INDEX IF NOT EXISTS idx_vehicle_events_community ON vehicle_events(community_id, occurred_at);
+CREATE INDEX IF NOT EXISTS idx_package_deliveries_community ON package_deliveries(community_id, status, arrived_at);
+CREATE INDEX IF NOT EXISTS idx_package_deliveries_resident ON package_deliveries(resident_user_id, status, arrived_at);
 CREATE INDEX IF NOT EXISTS idx_invitations_community ON invitations(community_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_auth_tokens_user ON auth_tokens(user_id, kind);
