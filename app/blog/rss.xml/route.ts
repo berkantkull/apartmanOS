@@ -18,7 +18,7 @@ export function GET() {
 <rss version="2.0"><channel>
   <title>apartmanOS Apartman Yönetimi Blogu</title>
   <link>https://apartmanos.com.tr/blog</link>
-  <description>Apartman yönetimi, aidat takibi, gider raporlama ve sakin iletişimi rehberleri.</description>
+  <description>Apartman yönetimi, aidat, duyuru, gelir-gider, arıza, toplantı, sakin, otopark ve kargo rehberleri.</description>
   <language>tr-TR</language>
   <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
   ${items}

@@ -6,16 +6,19 @@ import { blogPosts } from "./blog-data";
 const canonical = "https://apartmanos.com.tr/blog";
 
 export const metadata: Metadata = {
-  title: "Apartman Yönetimi Blogu | Aidat, Gider ve Sakin Yönetimi",
-  description: "Apartman ve site yöneticileri için aidat takibi, gider raporlama, sakin iletişimi ve dijital yönetim üzerine uygulanabilir rehberler.",
+  title: "Apartman Yönetimi Blogu | Aidat, Duyuru, Arıza ve Site Yönetimi",
+  description: "Aidat, duyuru, gelir-gider, arıza, toplantı, sakin, otopark ve kargo yönetimi için apartman ve site yöneticilerine uygulamalı rehberler.",
+  keywords: ["apartman yönetimi", "apartman yönetim programı", "site yönetimi", "aidat takip programı", "apartmanOS"],
   alternates: { canonical },
   openGraph: {
     type: "website",
     locale: "tr_TR",
     url: canonical,
     title: "apartmanOS Apartman Yönetimi Blogu",
-    description: "Apartman yönetimini daha düzenli ve anlaşılır yürütmek için güncel rehberler."
-  }
+    description: "Aidattan kargoya apartman yönetimini daha düzenli ve anlaşılır yürütmek için güncel rehberler.",
+    images: [{ url: "/apartmanos-logo-original.png", width: 1254, height: 1254, alt: "apartmanOS apartman yönetimi blogu" }]
+  },
+  twitter: { card: "summary_large_image", title: "apartmanOS Apartman Yönetimi Blogu", description: "Aidattan kargoya apartman yönetimi rehberleri.", images: ["/apartmanos-logo-original.png"] }
 };
 
 const structuredData = {
@@ -38,7 +41,7 @@ const structuredData = {
 };
 
 export default function BlogPage() {
-  return <SeoPage eyebrow="apartmanOS Blog" title="Apartman yönetimini kolaylaştıran pratik rehberler." lead="Aidat, gider, duyuru ve sakin yönetimini daha düzenli yürütmek isteyen yöneticiler için açık, uygulanabilir ve güncel bilgiler." structuredData={structuredData}>
+  return <SeoPage eyebrow="apartmanOS Blog" title="Apartman yönetimini kolaylaştıran pratik rehberler." lead="Aidat, duyuru, finans, arıza, toplantı, sakin, otopark ve kargo süreçlerini daha düzenli yürütmek isteyen yöneticiler için açık, uygulanabilir ve güncel bilgiler." structuredData={structuredData}>
     <section className="blog-intro" aria-labelledby="blog-intro-title">
       <div><BookOpenText/><h2 id="blog-intro-title">Doğrudan sorunuza cevap veren içerikler</h2></div>
       <p>Her rehber önce kısa cevabı verir, ardından uygulama adımlarını ve sık sorulan soruları açıklar. Böylece ihtiyaç duyduğunuz bilgiye hızlıca ulaşabilirsiniz.</p>
