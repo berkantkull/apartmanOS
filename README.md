@@ -34,4 +34,4 @@ Uygulama varsayılan olarak `http://localhost:5173` adresinde açılır. Yerel o
 
 Vinext/React, TypeScript, Cloudflare D1, Drizzle ORM, Tailwind CSS ve shadcn tabanlı arayüz bileşenleri.
 
-Canlı adres: [apartmanos.berkantkul.com.tr](https://apartmanos.berkantkul.com.tr)
+Canlı adres: apartmanos.com.tr
