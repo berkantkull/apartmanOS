@@ -8,7 +8,7 @@ const canonical = "https://apartmanos.com.tr/blog";
 export const metadata: Metadata = {
   title: "Apartman Yönetimi Blogu | Aidat, Duyuru, Arıza ve Site Yönetimi",
   description: "Aidat, duyuru, gelir-gider, arıza, toplantı, sakin, otopark ve kargo yönetimi için apartman ve site yöneticilerine uygulamalı rehberler.",
-  keywords: ["apartman yönetimi", "apartman yönetim programı", "site yönetimi", "aidat takip programı", "apartmanOS"],
+  keywords: ["apartman yönetimi", "apartman yönetimi nasıl yapılır", "apartman yönetim programı", "site yönetimi", "aidat takip programı", "apartmanOS"],
   alternates: { canonical },
   openGraph: {
     type: "website",

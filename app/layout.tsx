@@ -11,7 +11,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://apartmanos.com.tr"),
   title: { default: "apartmanOS | Apartman ve Site Yönetim Programı", template: "%s | apartmanOS" },
-  description: "Aidat, gider, duyuru ve kararları apartmanınıza özel tek yerde yönetin.",
+  description: "Aidat ve ödeme, gelir-gider, duyuru, arıza, toplantı, sakin, otopark ve kargo yönetimini apartmanınıza özel tek yerde yürütün.",
   applicationName: "apartmanOS",
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, title: "apartmanOS", statusBarStyle: "default" },
@@ -22,7 +22,9 @@ export const metadata: Metadata = {
   category: "technology",
   keywords: [
     "apartmanOS", "apartman yönetim programı", "site yönetim programı",
-    "aidat takip programı", "apartman aidat takibi", "apartman gider takibi",
+    "apartman yönetimi nasıl yapılır", "apartman yöneticiliği",
+    "aidat takip programı", "apartman aidat takibi", "apartman gelir gider takibi",
+    "apartman arıza takip sistemi", "apartman sakin yönetimi", "apartman otopark yönetimi",
   ],
   alternates: { types: { "application/rss+xml": "https://apartmanos.com.tr/blog/rss.xml" } },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },

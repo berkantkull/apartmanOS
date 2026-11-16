@@ -50,6 +50,7 @@ export default async function BlogPostPage({ params }: Props) {
         publisher: { "@type": "Organization", name: "Stark Bilişim Hizmetleri", brand: { "@type": "Brand", name: "apartmanOS" }, url: "https://apartmanos.com.tr" },
         articleSection: post.category,
         keywords: post.keywords.join(", "),
+        citation: post.sources?.map(source => source.url),
         about: ["Apartman yönetimi", post.category]
       },
       {
@@ -85,6 +86,7 @@ export default async function BlogPostPage({ params }: Props) {
     <div className="blog-article-body">
       <nav className="article-toc" aria-label="İçindekiler"><strong>Bu rehberde</strong><ol>{post.sections.map(section=><li key={section.heading}><a href={`#${headingId(section.heading)}`}>{section.heading}</a></li>)}</ol></nav>
       {post.sections.map(section => <section id={headingId(section.heading)} key={section.heading}><h2>{section.heading}</h2>{section.paragraphs.map(paragraph => <p key={paragraph}>{paragraph}</p>)}{section.bullets?<ul>{section.bullets.map(item=><li key={item}>{item}</li>)}</ul>:null}</section>)}
+      {post.sources?.length ? <section className="article-sources" aria-labelledby="article-sources-title"><p className="marketing-eyebrow">Kaynaklar</p><h2 id="article-sources-title">Resmî kaynaklar ve ek okuma</h2><div>{post.sources.map(source=><a href={source.url} target="_blank" rel="noreferrer" key={source.url}><strong>{source.label}</strong><span>{source.description}</span></a>)}</div></section> : null}
       <section className="article-product-note"><h2>apartmanOS ile uygulayın</h2><p>apartmanOS; aidat ve ödeme, gelir-gider, duyuru, arıza-talep, toplantı-karar, daire-sakin, otopark ve kargo yönetimini her apartmana özel tek bir çalışma alanında bir araya getirir.</p><div className="article-links"><a href="/apartman-yonetim-programi">Apartman yönetimi özellikleri <ArrowRight/></a><a href="/aidat-takip-programi">Aidat takip sistemi <ArrowRight/></a></div></section>
       <section className="article-faq"><p className="marketing-eyebrow">Sık sorulan sorular</p><h2>{post.title.replace(/\?[^?]*$/, "")} hakkında merak edilenler</h2>{post.faqs.map(item=><details key={item.question}><summary>{item.question}<span>+</span></summary><p>{item.answer}</p></details>)}</section>
       <section className="author-box"><div>BK</div><div><span>Yazar</span><h2>Berkant Kul</h2><p>apartmanOS geliştiricisi. Ürün, Stark Bilişim Hizmetleri çatısı altında apartman ve site yönetim süreçlerini sadeleştirmek amacıyla geliştirilmektedir.</p></div></section>

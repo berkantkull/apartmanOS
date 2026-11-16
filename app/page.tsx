@@ -1,9 +1,9 @@
 /* eslint-disable @next/next/no-html-link-for-pages -- Vinext'in Link/RSC prefetch katmanı üretimde hata verdiği için standart gezinme kullanılıyor. */
 import type { Metadata } from "next";
 import {
-  ArrowRight, BadgeTurkishLira, BellRing, BookOpenCheck, Building2,
-  CheckCircle2, CircleGauge, FileText, ShieldCheck,
-  UsersRound, WalletCards,
+  ArrowRight, BadgeTurkishLira, BellRing, Building2, CalendarCheck2,
+  CarFront, CheckCircle2, CircleGauge, PackageCheck, ShieldCheck,
+  UsersRound, WalletCards, Wrench,
 } from "lucide-react";
 import LogoMark from "./logo-mark";
 
@@ -11,12 +11,12 @@ const siteUrl = "https://apartmanos.com.tr";
 
 export const metadata: Metadata = {
   title: { absolute: "apartmanOS | Apartman ve Site Yönetim Programı" },
-  description: "Aidat, borç, gider, duyuru, karar defteri ve sakin yönetimini tek yerde toplayan, kullanımı kolay apartman ve site yönetim programı.",
+  description: "Aidat, gelir-gider, duyuru, arıza, toplantı, sakin, otopark ve kargo yönetimini tek yerde toplayan apartman ve site yönetim programı.",
   alternates: { canonical: "/" },
   openGraph: {
     type: "website", locale: "tr_TR", url: siteUrl, siteName: "apartmanOS",
     title: "apartmanOS | Apartman ve Site Yönetim Programı",
-    description: "Apartmanınızın aidat, gider, duyuru ve karar süreçlerini sade bir panelden yönetin.",
+    description: "Apartmanınızın aidat, finans, duyuru, arıza, toplantı, sakin, otopark ve kargo süreçlerini sade bir panelden yönetin.",
   },
   twitter: {
     card: "summary", title: "apartmanOS | Apartman ve Site Yönetim Programı",
@@ -26,15 +26,17 @@ export const metadata: Metadata = {
 
 const features = [
   { icon: BadgeTurkishLira, title: "Aidat ve borç takibi", text: "Daire bazında aidatları, ödemeleri ve geciken borçları anlaşılır biçimde takip edin." },
-  { icon: WalletCards, title: "Gider yönetimi", text: "Ortak alan harcamalarını kaydedin, giderlerin nereye yapıldığını şeffaflaştırın." },
-  { icon: BellRing, title: "Duyurular", text: "Önemli gelişmeleri sakinlerle tek merkezden, hızlı ve düzenli biçimde paylaşın." },
-  { icon: BookOpenCheck, title: "Karar defteri", text: "Yönetim kararlarını tarihleri ve açıklamalarıyla dijital ortamda kayıt altında tutun." },
+  { icon: WalletCards, title: "Gelir-gider yönetimi", text: "Mali hareketleri belgeleriyle kaydedin; kasa, banka ve dönem raporlarını izleyin." },
+  { icon: BellRing, title: "Duyuru ve bildirimler", text: "Apartman, blok veya daire bazlı duyuruları ekleri ve okunma durumuyla paylaşın." },
+  { icon: Wrench, title: "Arıza ve talepler", text: "Sakin taleplerini öncelik, durum, yönetici notu ve çözüm geçmişiyle yönetin." },
+  { icon: CalendarCheck2, title: "Toplantı ve kararlar", text: "Genel kurul gündemlerini, katılımcıları, kararları ve tutanakları arşivleyin." },
   { icon: UsersRound, title: "Sakin ve daire yönetimi", text: "Her apartmanı kendi üyeleri, daireleri ve yetkileriyle birbirinden ayrı yönetin." },
-  { icon: FileText, title: "Düzenli kayıtlar", text: "Dağınık notlar yerine bütün yönetim kayıtlarını tek, erişilebilir bir sistemde toplayın." },
+  { icon: CarFront, title: "Otopark ve araçlar", text: "Otopark tahsislerini, sakin ve misafir araçlarını, giriş-çıkış kayıtlarını izleyin." },
+  { icon: PackageCheck, title: "Kargo ve teslimatlar", text: "Gelen kargoyu ilgili sakine bildirin; bekleyen ve teslim edilen paketleri takip edin." },
 ];
 
 const faqs = [
-  { q: "apartmanOS nedir?", a: "apartmanOS; apartman ve site yöneticilerinin aidat, borç, gider, duyuru, karar ve sakin kayıtlarını internet üzerinden yönetmesini sağlayan bir web uygulamasıdır." },
+  { q: "apartmanOS nedir?", a: "apartmanOS; apartman ve site yöneticilerinin aidat, gelir-gider, duyuru, arıza, toplantı, sakin, otopark ve kargo süreçlerini internet üzerinden yönetmesini sağlayan bir web uygulamasıdır." },
   { q: "Her apartmanın bilgileri ayrı mı tutulur?", a: "Evet. Kullanıcılar kendi apartmanını oluşturabilir veya davet koduyla mevcut apartmanına katılabilir. Her topluluğun kayıtları ve üyeleri kendine özeldir." },
   { q: "Telefondan kullanılabilir mi?", a: "Evet. apartmanOS web tarayıcısı üzerinden masaüstü, tablet ve telefon ekranlarına uyumlu olarak çalışır." },
   { q: "Kim geliştirdi?", a: "apartmanOS, Berkant Kul tarafından geliştirilmekte ve Stark Bilişim Hizmetleri çatısı altında sunulmaktadır." },
@@ -43,15 +45,16 @@ const faqs = [
 const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
-    { "@type": "WebSite", "@id": `${siteUrl}/#website`, url: siteUrl, name: "apartmanOS", alternateName: "Apartman OS", inLanguage: "tr-TR", publisher: { "@id": `${siteUrl}/#organization` } },
-    { "@type": "Organization", "@id": `${siteUrl}/#organization`, name: "Stark Bilişim Hizmetleri", url: siteUrl, logo: `${siteUrl}/apartmanos-icon.png`, founder: { "@id": `${siteUrl}/#berkant-kul` }, sameAs: ["https://berkantkul.com.tr"] },
-    { "@type": "Person", "@id": `${siteUrl}/#berkant-kul`, name: "Berkant Kul", url: "https://berkantkul.com.tr", affiliation: { "@id": `${siteUrl}/#organization` } },
+    { "@type": "WebSite", "@id": `${siteUrl}/#website`, url: siteUrl, name: "apartmanOS", alternateName: ["Apartman OS", "apartmanOS Türkiye"], inLanguage: "tr-TR", publisher: { "@id": `${siteUrl}/#apartmanos` } },
+    { "@type": "Organization", "@id": `${siteUrl}/#apartmanos`, name: "apartmanOS", url: siteUrl, logo: { "@type": "ImageObject", url: `${siteUrl}/apartmanos-icon.png`, width: 1254, height: 1254 }, description: "Türkiye'de geliştirilen web tabanlı apartman ve site yönetim yazılımı.", founder: { "@id": `${siteUrl}/#berkant-kul` }, parentOrganization: { "@id": `${siteUrl}/#stark-bilisim` }, sameAs: ["https://github.com/berkantkull/apartmanOS", "https://berkantkul.com.tr"] },
+    { "@type": "Organization", "@id": `${siteUrl}/#stark-bilisim`, name: "Stark Bilişim Hizmetleri", url: "https://berkantkul.com.tr", founder: { "@id": `${siteUrl}/#berkant-kul` } },
+    { "@type": "Person", "@id": `${siteUrl}/#berkant-kul`, name: "Berkant Kul", url: "https://berkantkul.com.tr", sameAs: ["https://github.com/berkantkull"], affiliation: { "@id": `${siteUrl}/#stark-bilisim` } },
     {
       "@type": "SoftwareApplication", "@id": `${siteUrl}/#software`, name: "apartmanOS", url: siteUrl,
       applicationCategory: "BusinessApplication", applicationSubCategory: "Apartman ve site yönetimi",
       operatingSystem: "Web", inLanguage: "tr-TR",
-      description: "Aidat, borç, gider, duyuru, karar defteri ve sakin yönetimi için web tabanlı apartman ve site yönetim uygulaması.",
-      creator: { "@id": `${siteUrl}/#berkant-kul` }, provider: { "@id": `${siteUrl}/#organization` },
+      description: "Aidat, gelir-gider, duyuru, arıza, toplantı, sakin, otopark ve kargo yönetimi için web tabanlı apartman ve site yönetim uygulaması.",
+      creator: { "@id": `${siteUrl}/#berkant-kul` }, provider: { "@id": `${siteUrl}/#apartmanos` }, brand: { "@id": `${siteUrl}/#apartmanos` }, sameAs: ["https://github.com/berkantkull/apartmanOS"],
     },
     {
       "@type": "FAQPage", "@id": `${siteUrl}/#faq`,
@@ -78,7 +81,7 @@ export default function MarketingHome() {
         <div className="hero-copy">
           <p className="marketing-eyebrow">Apartman yönetiminin yeni ve sade hali</p>
           <h1>Apartman ve site yönetimini <span>tek yerde</span> toplayın.</h1>
-          <p className="hero-lead">Aidat, borç, gider, duyuru, karar defteri ve sakin yönetimi artık dağınık değil. apartmanOS ile herkesin anlayabileceği düzenli bir yönetim kurun.</p>
+          <p className="hero-lead">Aidat, gelir-gider, duyuru, arıza, toplantı, sakin, otopark ve kargo yönetimi artık dağınık değil. apartmanOS ile herkesin anlayabileceği düzenli bir yönetim kurun.</p>
           <div className="hero-actions">
             <a className="marketing-primary" href="/giris">Ücretsiz hesap oluştur <ArrowRight /></a>
             <a className="marketing-secondary" href="#nasil-calisir">Nasıl çalıştığını görün</a>
@@ -110,7 +113,7 @@ export default function MarketingHome() {
       <section className="marketing-section features-section" id="ozellikler">
         <div className="section-intro"><p className="marketing-eyebrow">İhtiyacınız olan her şey</p><h2>Yönetimin yükünü azaltan, şeffaflığı artıran araçlar.</h2><p>Karmaşık tabloları ve kaybolan mesajları geride bırakın. Günlük yönetim işlerini sade bir akışta tamamlayın.</p></div>
         <div className="feature-grid">{features.map(({ icon: Icon, title, text }) => <article key={title}><span><Icon /></span><h3>{title}</h3><p>{text}</p></article>)}</div>
-        <div className="seo-link-row" aria-label="apartmanOS rehberleri"><a href="/apartman-yonetim-programi">Apartman yönetim programı rehberi <ArrowRight /></a><a href="/aidat-takip-programi">Aidat takip programı rehberi <ArrowRight /></a></div>
+        <div className="seo-link-row" aria-label="apartmanOS rehberleri"><a href="/blog/apartman-yonetimi-nasil-yapilir">Apartman yönetimi nasıl yapılır? <ArrowRight /></a><a href="/apartman-yonetim-programi">Apartman yönetim programı rehberi <ArrowRight /></a><a href="/aidat-takip-programi">Aidat takip programı rehberi <ArrowRight /></a></div>
       </section>
 
       <section className="marketing-section how-section" id="nasil-calisir">

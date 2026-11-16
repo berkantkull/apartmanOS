@@ -5,6 +5,7 @@ export type BlogSection = {
 };
 
 export type BlogFaq = { question: string; answer: string };
+export type BlogSource = { label: string; url: string; description: string };
 
 export type BlogPost = {
   slug: string;
@@ -18,11 +19,112 @@ export type BlogPost = {
   answer: string;
   keywords: string[];
   relatedSlugs: string[];
+  sources?: BlogSource[];
   sections: BlogSection[];
   faqs: BlogFaq[];
 };
 
 export const blogPosts: BlogPost[] = [
+  {
+    slug: "apartman-yonetimi-nasil-yapilir",
+    title: "Apartman Yönetimi Nasıl Yapılır? 2026 Uygulama Rehberi",
+    description: "Apartman yönetimine başlarken sakin kayıtları, aidat bütçesi, gelir-gider, duyuru, arıza, toplantı, karar ve KVKK süreçlerini adım adım planlayın.",
+    excerpt: "Yeni ve mevcut yöneticiler için ilk 30 günü kapsayan, uygulanabilir apartman yönetimi kontrol listesi.",
+    category: "Apartman yönetimi",
+    publishedAt: "2026-11-16",
+    updatedAt: "2026-11-16",
+    readingTime: "11 dakika",
+    answer: "Apartman yönetimi; yönetim planı ve mevcut kararların incelenmesi, blok-daire-sakin envanterinin hazırlanması, yıllık bütçe ile aidatların belirlenmesi, gelir-gider kayıtlarının düzenli tutulması, bakım taleplerinin takip edilmesi ve kat maliklerinin zamanında bilgilendirilmesiyle yürütülür. Sağlıklı bir düzende her işlem tarihçesiyle kaydedilir, yetkiler ayrılır ve kişisel verilere yalnızca görevli kişiler erişir.",
+    keywords: ["apartman yönetimi nasıl yapılır", "apartman yöneticiliği", "apartman yönetimi", "apartman yöneticisi görevleri", "site yönetimi nasıl yapılır", "apartman yönetim rehberi"],
+    relatedSlugs: ["apartman-yonetim-programi-secerken-nelere-bakilmali", "apartman-aidat-takibi-nasil-yapilir", "apartman-genel-kurul-toplanti-karar-yonetimi"],
+    sections: [
+      {
+        heading: "1. Yönetim planını, kararları ve mevcut kayıtları teslim alın",
+        paragraphs: [
+          "Göreve başlarken ilk iş yeni kayıt açmak değil, apartmanın mevcut durumunu anlamaktır. Yönetim planı, önceki toplantı tutanakları, kararlar, sözleşmeler, banka ve kasa bilgileri, devam eden bakım işleri ile borç-alacak listesi birlikte incelenmelidir.",
+          "Teslim alınan belgeler tarih ve tür bilgisiyle sınıflandırılmalıdır. Eksik veya açıklaması bulunmayan kayıtlar için önceki yönetimden yazılı bilgi istenmesi, sonraki dönemde ortaya çıkabilecek belirsizlikleri azaltır."
+        ],
+        bullets: ["Yönetim planı ve karar defteri", "Banka, kasa ve borç-alacak özeti", "Tedarikçi ve personel sözleşmeleri", "Devam eden bakım ve arıza kayıtları", "Anahtar, cihaz ve ortak alan envanteri"]
+      },
+      {
+        heading: "2. Blok, daire, malik ve kiracı envanterini güncelleyin",
+        paragraphs: [
+          "Yönetim kayıtlarının temeli doğru daire envanteridir. Her blok ve daire için kat, bağımsız bölüm numarası, malik-kiracı ayrımı ve güncel iletişim bilgileri kaydedilmelidir. Bir sakin taşındığında dairenin geçmiş mali kayıtları silinmemeli, yalnızca aktif kullanıcı ilişkisi güncellenmelidir.",
+          "Telefon ve e-posta gibi kişisel verilere herkes erişmemelidir. Yönetici, sakin, personel ve güvenlik rolleri görevleri kadar yetkilendirilmeli; bir kullanıcının başka bir dairenin özel bilgilerini görmesi engellenmelidir."
+        ]
+      },
+      {
+        heading: "3. Yıllık bütçeyi hazırlayın ve aidat düzenini kurun",
+        paragraphs: [
+          "Aidat tutarı yalnızca önceki yılın rakamı artırılarak belirlenmemelidir. Elektrik, su, temizlik, asansör, personel, sigorta, bakım-onarım ve planlanan yatırımlar için gerçekçi bir gider tahmini hazırlanmalıdır.",
+          "Aylık aidatlar tüm aktif daireler için tek işlemle oluşturulabilir; daireye özel ek borçlar ayrıca kaydedilir. Son ödeme tarihi, ödeme yöntemi ve gecikme durumu açıkça izlenmeli; ödeme tamamlandığında kayıt silinmek yerine ödendi durumuna geçirilmelidir."
+        ],
+        bullets: ["Beklenen yıllık işletme giderleri", "Planlı bakım ve yenileme bütçesi", "Mevcut kasa ve banka bakiyesi", "Gecikmiş alacaklar", "Daire veya arsa payına göre dağıtım yöntemi"]
+      },
+      {
+        heading: "4. Gelir-gider ve ödeme kayıtlarını belgeye bağlayın",
+        paragraphs: [
+          "Her gelir ve gider; tarih, tutar, kategori, açıklama ve ödeme hesabıyla kaydedilmelidir. Fatura, fiş, makbuz veya sözleşme ilgili işlemin yanında saklandığında dönem sonu raporu daha hızlı ve denetlenebilir biçimde hazırlanır.",
+          "Tahakkuk eden aidat ile tahsil edilen para aynı şey değildir. Beklenen gelir, gerçekleşen tahsilat, kasa bakiyesi ve banka bakiyesi ayrı gösterilmelidir. Aylık özetler PDF olarak paylaşılabilir, ayrıntılı hareketler Excel uyumlu biçimde dışa aktarılabilir."
+        ]
+      },
+      {
+        heading: "5. Duyuru ve bildirimleri doğru hedef kitleye gönderin",
+        paragraphs: [
+          "Her duyuruyu bütün apartmana göndermek zamanla bildirimlerin önemini azaltır. Mesaj; apartman geneline, belirli bir bloğa veya yalnızca etkilenen dairelere yönlendirilebilir. Acil durumlar ayrı işaretlenmeli, normal bilgilendirmeler planlı yayınlanmalıdır.",
+          "Tarih, saat, etkilenen alan ve sakinden beklenen işlem duyurunun ilk bölümünde yer almalıdır. Fotoğraf veya PDF eki gerekiyorsa açıklayıcı dosya adı kullanılmalı; kritik duyuruların kimler tarafından okunduğu takip edilmelidir."
+        ]
+      },
+      {
+        heading: "6. Arıza, bakım ve sakin taleplerini durumlarıyla izleyin",
+        paragraphs: [
+          "Telefon konuşması veya mesaj grubunda kalan bir arıza kaydı kolayca unutulabilir. Talebin kategorisi, önceliği, açıklaması, görseli ve ilgili alanı tek kayıtta tutulmalıdır.",
+          "Yeni, inceleniyor, işleme alındı, çözüldü ve iptal edildi durumları hem yöneticiye hem sakine sürecin hangi aşamada olduğunu gösterir. Servis notu, yapılan işlem ve çözüm fotoğrafı geçmişe eklendiğinde aynı sorun tekrarlandığında önceki müdahaleye ulaşılabilir."
+        ]
+      },
+      {
+        heading: "7. Toplantı, genel kurul ve karar arşivini düzenleyin",
+        paragraphs: [
+          "Toplantı tarihi, saati, yeri ve gündemi önceden hazırlanmalı; katılımcı ve katılım durumları toplantı kaydına bağlanmalıdır. Alınan her karar numara, tarih, açık karar metni ve ilgili toplantıyla birlikte saklanmalıdır.",
+          "Toplantı notlarından düzenli bir PDF tutanak üretilebilir; imzalı tutanak ve ek belgeler aynı arşivde tutulabilir. Resmî şekil, çağrı, çoğunluk ve saklama koşulları için yönetim planı ile güncel mevzuat ayrıca dikkate alınmalıdır."
+        ]
+      },
+      {
+        heading: "8. Kişisel verileri ve erişim yetkilerini koruyun",
+        paragraphs: [
+          "Apartman yönetimleri isim, telefon, e-posta, plaka, borç ve teslimat bilgisi gibi kişisel veriler işler. Bu veriler yalnızca belirli ve meşru yönetim amaçları için, ihtiyaç kadar tutulmalı ve yetkisiz kişilerle paylaşılmamalıdır.",
+          "Kişisel Verileri Koruma Kurulunun site yönetimlerine ilişkin değerlendirmesinde, somut duruma göre veri işleme kararlarını alan ve kayıt sistemini yöneten yapıların belirlenmesi gerektiği vurgulanır. Bu nedenle apartman yönetimi; erişim, saklama, bilgilendirme ve silme süreçlerini yazılı hale getirmelidir. Bu bölüm genel bilgilendirmedir; somut hukuki durumlar için uzman görüşü alınmalıdır."
+        ]
+      },
+      {
+        heading: "Yeni yönetici için ilk 30 günlük uygulama planı",
+        paragraphs: [
+          "İlk hafta belge ve envanter teslimi, ikinci hafta bütçe ve mali durum kontrolü, üçüncü hafta sakin iletişimi ile bakım kayıtlarının düzenlenmesi, dördüncü hafta ise eksiklerin raporlanması için ayrılabilir.",
+          "Ay sonunda kat maliklerine kısa ve anlaşılır bir başlangıç raporu sunmak güven oluşturur. Rapor; mevcut bakiye, bekleyen borçlar, önemli giderler, açık arızalar ve planlanan işleri içermelidir."
+        ],
+        bullets: ["1–7. gün: belge, hesap ve envanter teslimi", "8–14. gün: bütçe, aidat ve borç kontrolü", "15–21. gün: sakin, duyuru ve talep düzeni", "22–30. gün: eksiklerin tamamlanması ve başlangıç raporu"]
+      }
+    ],
+    sources: [
+      {
+        label: "KVKK – Site yönetimlerine ilişkin 2020/560 sayılı Kurul kararı",
+        url: "https://www.kvkk.gov.tr/Icerik/6798/2020-560",
+        description: "Apartman ve site yönetimlerinde veri sorumluluğunun somut duruma göre değerlendirilmesine ilişkin resmî karar özeti."
+      },
+      {
+        label: "KVKK – Apartmanlarda güvenlik kamerası kullanımında dikkat edilecek hususlar",
+        url: "https://www.kvkk.gov.tr/Icerik/8769/apartmanlarda-guvenlik-kamerasi-sistemi-kullaniminda-dikkat-edilecek-hususlara-dair-kamuoyu-duyurusu",
+        description: "Ortak alan güvenliği, erişim, saklama ve aydınlatma yükümlülüklerine ilişkin resmî kamuoyu duyurusu."
+      }
+    ],
+    faqs: [
+      { question: "Apartman yönetimine başlarken ilk yapılması gereken nedir?", answer: "Yönetim planı, kararlar, banka-kasa bilgileri, borç-alacak listesi, sözleşmeler ve devam eden işlerin tutanakla teslim alınmasıdır." },
+      { question: "Apartman yöneticisi aidatları nasıl takip etmeli?", answer: "Her aidat daire, dönem, tutar, son ödeme tarihi ve durumuyla kaydedilmeli; ödeme sonrası silinmeyip ödendi durumuna geçirilmelidir." },
+      { question: "Apartman yönetiminde hangi kayıtlar tutulmalı?", answer: "Daire ve sakin envanteri, aidat-ödeme hareketleri, gelir-gider belgeleri, duyurular, talepler, toplantılar, kararlar, bakım işleri ve yetki değişiklikleri düzenli tutulmalıdır." },
+      { question: "Apartman sakinlerinin telefon bilgileri herkesle paylaşılabilir mi?", answer: "Hayır. İletişim bilgileri yönetim amacıyla ve ihtiyaç kadar kullanılmalı; yalnızca yetkili kişilerin erişimine açık olmalıdır." },
+      { question: "Apartman yönetim programı zorunlu mudur?", answer: "Dijital program kullanımı genel olarak zorunlu değildir; ancak kayıtların düzenli, erişilebilir ve tarihçeli tutulmasını kolaylaştırır. Resmî defter ve belge yükümlülükleri ayrıca korunmalıdır." }
+    ]
+  },
   {
     slug: "apartman-yonetim-programi-secerken-nelere-bakilmali",
     title: "Apartman Yönetim Programı Seçerken Nelere Bakılmalı?",
@@ -34,7 +136,7 @@ export const blogPosts: BlogPost[] = [
     readingTime: "9 dakika",
     answer: "İyi bir apartman yönetim programı; aidat ve ödeme takibini, gelir-gider kayıtlarını, duyuruları, arıza taleplerini, toplantı ve kararları, sakinleri, otoparkı ve kargoları aynı apartmana bağlı tek bir sistemde yönetmelidir. Seçim yaparken özellik sayısından önce kullanım kolaylığına, rol bazlı yetkilendirmeye, mobil uyuma, raporlamaya ve verilerin her site için ayrı tutulmasına bakılmalıdır.",
     keywords: ["apartman yönetim programı", "site yönetim programı", "apartman yönetimi uygulaması", "apartman yönetim sistemi", "apartmanOS"],
-    relatedSlugs: ["apartman-aidat-takibi-nasil-yapilir", "apartman-ariza-talep-yonetimi", "daire-sakin-yonetimi-nasil-yapilir"],
+    relatedSlugs: ["apartman-yonetimi-nasil-yapilir", "apartman-aidat-takibi-nasil-yapilir", "apartman-ariza-talep-yonetimi"],
     sections: [
       {
         heading: "Apartman yönetim programı hangi işleri tek yerde toplamalı?",
