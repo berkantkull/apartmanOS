@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSessionUser, normalizeEmail, sameOrigin, validEmail } from "@/app/auth";
+import { bearerToken, getRequestSessionUser, normalizeEmail, sameOrigin, validEmail } from "@/app/auth";
 import { getDatabase } from "@/db";
 import { ensurePaymentSchema, handlePaymentAction, loadPaymentData } from "./payments";
 import { handleAnnouncementAction, loadAnnouncements } from "./announcements";
@@ -36,7 +36,7 @@ async function memberships(userId:string){
 }
 
 export async function GET(request:Request){
-  const user=await getSessionUser();
+  const user=await getRequestSessionUser(request);
   if(!user)return fail("Oturum açmanız gerekiyor.",401);
   const allMemberships=await memberships(user.userId);
   if(!allMemberships.length){
@@ -72,8 +72,8 @@ export async function GET(request:Request){
 }
 
 export async function POST(request:Request){
-  if(!sameOrigin(request))return fail("Geçersiz istek.",403);
-  const user=await getSessionUser();if(!user)return fail("Oturum açmanız gerekiyor.",401);
+  if(!bearerToken(request)&&!sameOrigin(request))return fail("Geçersiz istek.",403);
+  const user=await getRequestSessionUser(request);if(!user)return fail("Oturum açmanız gerekiyor.",401);
   await ensurePaymentSchema();
   const body=await request.json().catch(()=>null) as Record<string,unknown>|null;if(!body)return fail("Geçersiz istek.");
   const action=clean(body.action,40),db=getDatabase(),createdAt=now(),allMemberships=await memberships(user.userId);

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createSession, destroySession, hashPassword, normalizeEmail, rateLimitKey, sameOrigin, SESSION_COOKIE, SESSION_SECONDS, validEmail, verifyPassword } from "@/app/auth";
+import { bearerToken, createSession, destroySession, hashPassword, normalizeEmail, rateLimitKey, sameOrigin, SESSION_COOKIE, SESSION_SECONDS, validEmail, verifyPassword } from "@/app/auth";
 import { getDatabase } from "@/db";
 
 type StoredUser = { id: string; email: string; display_name: string; password_hash: string; password_salt: string };
@@ -30,11 +30,13 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
   if (!body) return json({ error: "Geçersiz istek." }, 400);
   const action = clean(body.action, 20);
+  const mobileClient = body.client === "mobile";
   const db = getDatabase();
 
   if (action === "logout") {
-    const token = request.headers.get("cookie")?.match(/(?:^|;\s*)apartmanos_session=([^;]+)/)?.[1];
+    const token = bearerToken(request) || request.headers.get("cookie")?.match(/(?:^|;\s*)apartmanos_session=([^;]+)/)?.[1];
     await destroySession(token);
+    if (mobileClient || bearerToken(request)) return json({ ok: true });
     return setSessionCookie(request, json({ ok: true }), "", 0);
   }
 
@@ -56,6 +58,7 @@ export async function POST(request: Request) {
     await db.prepare("INSERT INTO app_users (id, email, display_name, phone, password_hash, password_salt, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
       .bind(userId, email, displayName, phone, credentials.hash, credentials.salt, new Date().toISOString()).run();
     const session = await createSession(userId);
+    if (mobileClient) return json({ ok: true, sessionToken: session.token, expiresAt: session.expiresAt }, 201);
     return setSessionCookie(request, json({ ok: true, redirectTo: "/giris" }, 201), session.token);
   }
 
@@ -67,6 +70,7 @@ export async function POST(request: Request) {
     }
     await db.prepare("DELETE FROM auth_limits WHERE key = ?").bind(limitKey).run();
     const session = await createSession(user.id);
+    if (mobileClient) return json({ ok: true, sessionToken: session.token, expiresAt: session.expiresAt });
     return setSessionCookie(request, json({ ok: true, redirectTo: "/giris" }), session.token);
   }
 

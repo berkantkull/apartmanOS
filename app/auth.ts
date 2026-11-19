@@ -20,6 +20,15 @@ async function digest(value: string) {
   return bytesToBase64Url(new Uint8Array(await crypto.subtle.digest("SHA-256", textBytes(value))));
 }
 
+async function findSessionUser(token: string | undefined): Promise<AppUser | null> {
+  if (!token) return null;
+  const now = Math.floor(Date.now() / 1000);
+  const user = await getDatabase().prepare(`SELECT u.id AS "userId", u.email, u.display_name AS "displayName"
+    FROM sessions s JOIN app_users u ON u.id = s.user_id
+    WHERE s.token_hash = ? AND s.expires_at > ?`).bind(await digest(token), now).first<AppUser>();
+  return user ?? null;
+}
+
 export async function hashToken(value: string) {
   return digest(value);
 }
@@ -63,12 +72,17 @@ export async function destroySession(token: string | undefined) {
 
 export async function getSessionUser(): Promise<AppUser | null> {
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
-  if (!token) return null;
-  const now = Math.floor(Date.now() / 1000);
-  const user = await getDatabase().prepare(`SELECT u.id AS "userId", u.email, u.display_name AS "displayName"
-    FROM sessions s JOIN app_users u ON u.id = s.user_id
-    WHERE s.token_hash = ? AND s.expires_at > ?`).bind(await digest(token), now).first<AppUser>();
-  return user ?? null;
+  return findSessionUser(token);
+}
+
+export function bearerToken(request: Request) {
+  const authorization = request.headers.get("authorization");
+  return authorization?.match(/^Bearer\s+([A-Za-z0-9_-]+)$/i)?.[1];
+}
+
+export async function getRequestSessionUser(request: Request): Promise<AppUser | null> {
+  const token = bearerToken(request);
+  return token ? findSessionUser(token) : getSessionUser();
 }
 
 export function sameOrigin(request: Request) {

@@ -2,6 +2,8 @@
 
 apartmanOS, apartman ve site yönetimlerinin aidat, borç, gider, duyuru, karar ve sakin kayıtlarını tek bir yerde yönetmesi için geliştirilmiş web uygulamasıdır.
 
+Web uygulamasına ek olarak Expo Go ile çalışabilen mobil istemci [`mobile`](./mobile) klasöründe geliştirilmektedir.
+
 ## İlk sürümde bulunanlar
 
 - E-posta ve şifreyle hesap oluşturma ve güvenli giriş
@@ -33,5 +35,7 @@ Uygulama varsayılan olarak `http://localhost:5173` adresinde açılır. Yerel o
 ## Teknoloji
 
 Vinext/React, TypeScript, Cloudflare D1, Drizzle ORM, Tailwind CSS ve shadcn tabanlı arayüz bileşenleri.
+
+Mobil uygulama: Expo SDK 58, React Native, Expo Router ve Expo Secure Store.
 
 Canlı adres: apartmanos.com.tr
