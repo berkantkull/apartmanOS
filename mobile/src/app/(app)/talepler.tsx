@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Alert, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { AppScreen, Card, EmptyState, Field, Pill, PrimaryButton, ScreenHeader, SectionTitle, SecondaryButton } from "../../components/ui";
 import { useAuth } from "../../auth-context";
 import { colors, shortDate } from "../../theme";

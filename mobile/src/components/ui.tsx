@@ -7,7 +7,6 @@ import {
   KeyboardTypeOptions,
   Pressable,
   RefreshControl,
-  SafeAreaView,
   ScrollView,
   StyleProp,
   StyleSheet,
@@ -17,6 +16,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, shadow } from "../theme";
 
 export function LoadingView({ label = "apartmanOS hazırlanıyor" }: { label?: string }) {

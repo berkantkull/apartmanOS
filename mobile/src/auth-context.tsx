@@ -1,15 +1,15 @@
 import * as SecureStore from "expo-secure-store";
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Platform } from "react-native";
 import { appAction, authenticate, fetchAppData, revokeSession } from "./api";
 import type { AppData, AuthPayload } from "./types";
 
 const TOKEN_KEY = "apartmanos.mobile.session";
+const hasWebStorage = () => typeof globalThis.localStorage !== "undefined";
 
 const sessionStorage = {
-  get: () => Platform.OS === "web" ? Promise.resolve(globalThis.localStorage?.getItem(TOKEN_KEY) || null) : SecureStore.getItemAsync(TOKEN_KEY),
-  set: (value: string) => Platform.OS === "web" ? Promise.resolve(globalThis.localStorage?.setItem(TOKEN_KEY, value)) : SecureStore.setItemAsync(TOKEN_KEY, value),
-  remove: () => Platform.OS === "web" ? Promise.resolve(globalThis.localStorage?.removeItem(TOKEN_KEY)) : SecureStore.deleteItemAsync(TOKEN_KEY),
+  get: () => hasWebStorage() ? Promise.resolve(globalThis.localStorage.getItem(TOKEN_KEY)) : SecureStore.getItemAsync(TOKEN_KEY),
+  set: (value: string) => hasWebStorage() ? Promise.resolve(globalThis.localStorage.setItem(TOKEN_KEY, value)) : SecureStore.setItemAsync(TOKEN_KEY, value),
+  remove: () => hasWebStorage() ? Promise.resolve(globalThis.localStorage.removeItem(TOKEN_KEY)) : SecureStore.deleteItemAsync(TOKEN_KEY),
 };
 
 type AuthContextValue = {
