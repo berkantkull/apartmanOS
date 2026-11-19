@@ -47,22 +47,39 @@ export type Announcement = {
 };
 export type MaintenanceRequest = {
   id: string;
+  creator_name: string;
+  unit: string | null;
+  request_type: "fault" | "request";
   title: string;
   description: string;
   category: string;
   priority: "low" | "normal" | "high" | "urgent";
   status: "new" | "reviewing" | "in_progress" | "resolved" | "cancelled";
+  manager_note: string | null;
   created_at: string;
 };
 export type Meeting = { id: string; title: string; meeting_at: string; location: string; status: string };
 export type PackageDelivery = {
   id: string;
+  unit_id: string | null;
+  resident_user_id: string | null;
   resident_name: string;
   unit_label: string;
   courier_company: string;
+  tracking_number: string | null;
   status: "waiting" | "delivered";
   arrived_at: string;
+  recipient_name: string | null;
+  delivered_at: string | null;
+  notes: string | null;
+  reminder_count: number;
+  last_reminder_at: string | null;
+  created_by_name: string;
 };
+export type Member = { id: string; user_id: string; display_name: string; role: AppRole; unit: string | null };
+export type Resident = { id: string; name: string; unit: string; source: "manual" | "member" };
+export type PropertyUnit = { id: string; label: string; unit_no: string; owner_name: string | null; tenant_name: string | null };
+export type PropertyData = { units: PropertyUnit[] };
 export type Notification = { id: string; title: string; body: string; kind: string; read_at: string | null; created_at: string };
 export type Invitation = { id: string; email: string; token: string; unit: string | null; phone: string | null; community_name?: string };
 
@@ -78,6 +95,9 @@ export type AppData = {
   requests?: MaintenanceRequest[];
   meetings?: Meeting[];
   deliveries?: PackageDelivery[];
+  members?: Member[];
+  residents?: Resident[];
+  properties?: PropertyData;
   notifications?: Notification[];
   invitations?: Invitation[];
 };

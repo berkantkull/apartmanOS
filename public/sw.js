@@ -1,4 +1,4 @@
-const CACHE_NAME = "apartmanos-static-v3";
+const CACHE_NAME = "apartmanos-static-v4";
 const OFFLINE_URL = "/offline";
 const PRECACHE = [OFFLINE_URL, "/pwa-192.png", "/pwa-512.png", "/manifest.webmanifest"];
 

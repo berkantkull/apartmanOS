@@ -12,6 +12,8 @@ export default function PwaManager() {
   const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const agent = typeof navigator === "undefined" ? "" : navigator.userAgent.toLocaleLowerCase("tr");
+  const platform: "ios" | "android" | "desktop" = /iphone|ipad|ipod/.test(agent) ? "ios" : /android/.test(agent) ? "android" : "desktop";
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -60,21 +62,17 @@ export default function PwaManager() {
   if (installed) return null;
   return (
     <>
-      <button type="button" className="pwa-install-button" onClick={install} aria-label="apartmanOS uygulamasını Windows'a yükle">
+      <button type="button" className="pwa-install-button" onClick={install} aria-label="apartmanOS uygulamasını bu cihaza yükle">
         <Download aria-hidden="true" />
         <span>Uygulamayı yükle</span>
       </button>
       {showHelp ? (
         <section className="pwa-install-help" role="dialog" aria-modal="false" aria-labelledby="pwa-install-title">
           <button type="button" className="pwa-install-help-close" onClick={() => setShowHelp(false)} aria-label="Kurulum yardımını kapat"><X aria-hidden="true" /></button>
-          <span className="pwa-install-eyebrow">WINDOWS UYGULAMASI</span>
-          <h2 id="pwa-install-title">apartmanOS&apos;u bilgisayarına yükle</h2>
-          <p>Bu tarayıcı otomatik kurulum penceresini göstermedi. Chrome veya Edge&apos;de şu adımları kullanabilirsin:</p>
-          <ol>
-            <li>Adres çubuğunun sağındaki <strong>Uygulamayı yükle</strong> simgesine tıkla.</li>
-            <li>Simge yoksa tarayıcı menüsünden <strong>Uygulamalar → apartmanOS&apos;u yükle</strong> seçeneğini aç.</li>
-          </ol>
-          <p className="pwa-install-note">Uygulama yeni bir pencerede açılır ve Başlat menüsüne eklenir.</p>
+          <span className="pwa-install-eyebrow">TARAYICI UYGULAMASI</span>
+          <h2 id="pwa-install-title">apartmanOS&apos;u cihazına yükle</h2>
+          {platform === "ios" ? <><p>Safari&apos;de alt menüdeki <strong>Paylaş</strong> düğmesine dokun:</p><ol><li><strong>Ana Ekrana Ekle</strong> seçeneğini aç.</li><li>Sağ üstten <strong>Ekle</strong> diyerek kurulumu tamamla.</li></ol></> : platform === "android" ? <><p>Chrome menüsünü açıp şu adımları kullan:</p><ol><li><strong>Uygulamayı yükle</strong> veya <strong>Ana ekrana ekle</strong> seçeneğine dokun.</li><li>Kurulum onayını ver.</li></ol></> : <><p>Chrome veya Edge&apos;de şu adımları kullanabilirsin:</p><ol><li>Adres çubuğunun sağındaki <strong>Uygulamayı yükle</strong> simgesine tıkla.</li><li>Simge yoksa tarayıcı menüsünden <strong>Uygulamalar → apartmanOS&apos;u yükle</strong> seçeneğini aç.</li></ol></>}
+          <p className="pwa-install-note">Aynı apartmanOS hesabıyla giriş yapabilir; kargo, duyuru ve aidat bilgilerini uygulama görünümünde kullanabilirsin.</p>
         </section>
       ) : null}
     </>

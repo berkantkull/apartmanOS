@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { AppScreen, Brand, Card, ListItem, Pill, ScreenHeader, SectionTitle, SecondaryButton } from "../../components/ui";
 import { useAuth } from "../../auth-context";
@@ -15,12 +16,12 @@ export default function MoreScreen() {
   if (!membership) return null;
 
   const modules = [
-    { icon: "trending-up-outline" as const, title: "Gelir - gider", subtitle: `${(data?.expenses || []).length} gider kaydı`, count: (data?.expenses || []).length },
-    { icon: "construct-outline" as const, title: "Arıza ve talepler", subtitle: `${requests.filter(item => !["resolved", "cancelled"].includes(item.status)).length} açık talep`, count: requests.length },
-    { icon: "calendar-outline" as const, title: "Toplantı ve kararlar", subtitle: `${meetings.length} toplantı`, count: meetings.length },
-    { icon: "car-outline" as const, title: "Otopark ve araçlar", subtitle: "Araç kayıtları", count: 0 },
-    { icon: "cube-outline" as const, title: "Kargo ve teslimatlar", subtitle: `${deliveries.filter(item => item.status === "waiting").length} bekleyen kargo`, count: deliveries.length },
-    { icon: "people-outline" as const, title: "Daireler ve sakinler", subtitle: `${membership.unit || "Yönetim görünümü"}`, count: 0 },
+    { icon: "trending-up-outline" as const, title: "Gelir - gider", subtitle: `${(data?.expenses || []).length} gider kaydı`, route: null },
+    { icon: "construct-outline" as const, title: "Arıza ve talepler", subtitle: `${requests.filter(item => !["resolved", "cancelled"].includes(item.status)).length} açık talep`, route: "/(app)/talepler" as const },
+    { icon: "calendar-outline" as const, title: "Toplantı ve kararlar", subtitle: `${meetings.length} toplantı`, route: null },
+    { icon: "car-outline" as const, title: "Otopark ve araçlar", subtitle: "Web panelinde yönetilebilir", route: null },
+    { icon: "cube-outline" as const, title: "Kargo ve teslimatlar", subtitle: `${deliveries.filter(item => item.status === "waiting").length} bekleyen kargo`, route: "/(app)/kargolar" as const },
+    { icon: "people-outline" as const, title: "Daireler ve sakinler", subtitle: `${membership.unit || "Yönetim görünümü"}`, route: null },
   ];
 
   return (
@@ -36,7 +37,7 @@ export default function MoreScreen() {
 
       <SectionTitle title="Yönetim modülleri" />
       <Card>
-        {modules.map(module => <ListItem key={module.title} icon={module.icon} title={module.title} subtitle={module.subtitle} trailing={<Pill label="Özet" />} />)}
+        {modules.map(module => module.route ? <Pressable key={module.title} onPress={() => router.push(module.route!)}><ListItem icon={module.icon} title={module.title} subtitle={module.subtitle} trailing={<Ionicons name="chevron-forward" size={18} color={colors.muted} />} /></Pressable> : <ListItem key={module.title} icon={module.icon} title={module.title} subtitle={module.subtitle} trailing={<Pill label="Web" />} />)}
       </Card>
 
       <SectionTitle title="Hesap" />

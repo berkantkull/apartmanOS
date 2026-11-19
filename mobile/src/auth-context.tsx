@@ -32,22 +32,22 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const load = useCallback(async (sessionToken: string, communityId = "") => {
-    setLoading(true);
-    setError("");
+  const load = useCallback(async (sessionToken: string, communityId = "", quiet = false) => {
+    if (!quiet) setLoading(true);
+    if (!quiet) setError("");
     try {
       const next = await fetchAppData(sessionToken, communityId);
       setData(next);
     } catch (reason) {
       const message = reason instanceof Error ? reason.message : "Bilgiler yüklenemedi.";
-      setError(message);
+      if (!quiet) setError(message);
       if (/oturum/i.test(message)) {
         await sessionStorage.remove();
         setToken(null);
         setData(null);
       }
     } finally {
-      setLoading(false);
+      if (!quiet) setLoading(false);
     }
   }, []);
 
@@ -61,6 +61,12 @@ export function AuthProvider({ children }: PropsWithChildren) {
       await load(storedToken);
     });
   }, [load]);
+
+  useEffect(() => {
+    if (!token || !data?.membership?.community_id) return;
+    const timer = setInterval(() => void load(token, data.membership?.community_id || "", true), 30_000);
+    return () => clearInterval(timer);
+  }, [data?.membership?.community_id, load, token]);
 
   const completeAuth = useCallback(async (action: "login" | "register", payload: AuthPayload) => {
     setLoading(true);

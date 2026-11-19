@@ -53,15 +53,19 @@ export async function handleDeliveryAction(action:string,body:Record<string,unkn
   const db=getDatabase(),createdAt=now();
   if(action==="createPackageDelivery"){
     const residentKey=clean(body.residentKey,100),unitLabelInput=clean(body.unitLabel,100),unitIdInput=clean(body.unitId,80),courier=clean(body.courierCompany,80),tracking=clean(body.trackingNumber,120),notes=clean(body.notes,1000),arrivedAt=clean(body.arrivedAt,40);
-    let residentUserId:string|null=null,residentName="",residentUnit="";
+    let residentUserId:string|null=null,residentName="",residentUnit="",unitId:string|null=null;
     if(residentKey.startsWith("member:")){
       const member=await db.prepare("SELECT user_id,display_name,unit FROM members WHERE id=? AND community_id=? AND role='resident'").bind(residentKey.slice(7),context.communityId).first<{user_id:string;display_name:string;unit:string|null}>();
       if(!member)return fail("Seçilen sakin hesabı bulunamadı.",404);residentUserId=member.user_id;residentName=member.display_name;residentUnit=member.unit||"";
     }else if(residentKey.startsWith("resident:")){
       const resident=await db.prepare("SELECT name,unit FROM residents WHERE id=? AND community_id=?").bind(residentKey.slice(9),context.communityId).first<{name:string;unit:string}>();
       if(!resident)return fail("Seçilen sakin bulunamadı.",404);residentName=resident.name;residentUnit=resident.unit;
+    }else if(residentKey.startsWith("property:")){
+      const unit=await db.prepare("SELECT u.id,u.unit_no,u.owner_name,u.tenant_name,b.name AS block_name FROM property_units u JOIN property_blocks b ON b.id=u.block_id WHERE u.id=? AND u.community_id=?").bind(residentKey.slice(9),context.communityId).first<{id:string;unit_no:string;owner_name:string|null;tenant_name:string|null;block_name:string}>();
+      if(!unit)return fail("Seçilen daire sakini bulunamadı.",404);
+      residentName=unit.tenant_name||unit.owner_name||"Daire sakini";residentUnit=`${unit.block_name} · Daire ${unit.unit_no}`;unitId=unit.id;
     }else return fail("Kargonun ait olduğu sakini seçin.");
-    let unitId:string|null=null,unitLabel=unitLabelInput||residentUnit;
+    let unitLabel=unitLabelInput||residentUnit;
     if(unitIdInput){const unit=await db.prepare("SELECT u.id,u.unit_no,b.name AS block_name FROM property_units u JOIN property_blocks b ON b.id=u.block_id WHERE u.id=? AND u.community_id=?").bind(unitIdInput,context.communityId).first<{id:string;unit_no:string;block_name:string}>();if(!unit)return fail("Seçilen daire bulunamadı.",404);unitId=unit.id;unitLabel=`${unit.block_name} · Daire ${unit.unit_no}`;}
     const arrivedDate=new Date(arrivedAt);if(!unitLabel||!courier||!arrivedAt||Number.isNaN(arrivedDate.getTime()))return fail("Daire, kargo firması ve geçerli bir geliş tarihi gerekli.");
     const packageId=id();

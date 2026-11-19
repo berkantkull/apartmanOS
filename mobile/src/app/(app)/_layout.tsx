@@ -33,6 +33,8 @@ export default function AppTabsLayout() {
       <Tabs.Screen name="aidatlar" options={{ title: "Aidatlar" }} />
       <Tabs.Screen name="duyurular" options={{ title: "Duyurular" }} />
       <Tabs.Screen name="daha" options={{ title: "Daha Fazla" }} />
+      <Tabs.Screen name="kargolar" options={{ href: null }} />
+      <Tabs.Screen name="talepler" options={{ href: null }} />
     </Tabs>
   );
 }
