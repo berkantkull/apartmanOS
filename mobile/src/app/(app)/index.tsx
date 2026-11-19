@@ -50,8 +50,8 @@ export default function DashboardScreen() {
       <View style={styles.quickGrid}>
         <QuickAction icon="wallet-outline" label="Aidatlar" note={`${dues.length} kayıt`} onPress={() => router.push("/(app)/aidatlar")} />
         <QuickAction icon="megaphone-outline" label="Duyurular" note={`${unread} okunmamış`} onPress={() => router.push("/(app)/duyurular")} />
-        <QuickAction icon="construct-outline" label="Arıza ve talep" note={`${openRequests} açık`} onPress={() => router.push("/(app)/talepler")} />
-        <QuickAction icon="cube-outline" label="Kargolar" note={`${(data?.deliveries || []).filter(item => item.status === "waiting").length} bekliyor`} onPress={() => router.push("/(app)/kargolar")} />
+        <QuickAction icon="construct-outline" label="Arıza ve talep" note={`${openRequests} açık`} onPress={() => router.push("/talepler")} />
+        <QuickAction icon="cube-outline" label="Kargolar" note={`${(data?.deliveries || []).filter(item => item.status === "waiting").length} bekliyor`} onPress={() => router.push("/kargolar")} />
       </View>
 
       <SectionTitle title="Son duyurular" action="Tümünü gör" onAction={() => router.push("/(app)/duyurular")} />

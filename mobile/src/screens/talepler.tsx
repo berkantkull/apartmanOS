@@ -2,10 +2,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AppScreen, Card, EmptyState, Field, Pill, PrimaryButton, ScreenHeader, SectionTitle, SecondaryButton } from "../../components/ui";
-import { useAuth } from "../../auth-context";
-import { colors, shortDate } from "../../theme";
-import type { MaintenanceRequest } from "../../types";
+import { AppScreen, Card, EmptyState, Field, Pill, PrimaryButton, ScreenHeader, SectionTitle, SecondaryButton } from "../components/ui";
+import { useAuth } from "../auth-context";
+import { colors, shortDate } from "../theme";
+import type { MaintenanceRequest } from "../types";
 
 const statusNames = { new: "Yeni", reviewing: "İnceleniyor", in_progress: "İşleme Alındı", resolved: "Çözüldü", cancelled: "İptal Edildi" } as const;
 const priorityNames = { low: "Düşük", normal: "Normal", high: "Yüksek", urgent: "Acil" } as const;

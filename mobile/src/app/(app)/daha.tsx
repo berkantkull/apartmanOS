@@ -17,10 +17,10 @@ export default function MoreScreen() {
 
   const modules = [
     { icon: "trending-up-outline" as const, title: "Gelir - gider", subtitle: `${(data?.expenses || []).length} gider kaydı`, route: null },
-    { icon: "construct-outline" as const, title: "Arıza ve talepler", subtitle: `${requests.filter(item => !["resolved", "cancelled"].includes(item.status)).length} açık talep`, route: "/(app)/talepler" as const },
+    { icon: "construct-outline" as const, title: "Arıza ve talepler", subtitle: `${requests.filter(item => !["resolved", "cancelled"].includes(item.status)).length} açık talep`, route: "/talepler" as const },
     { icon: "calendar-outline" as const, title: "Toplantı ve kararlar", subtitle: `${meetings.length} toplantı`, route: null },
     { icon: "car-outline" as const, title: "Otopark ve araçlar", subtitle: "Web panelinde yönetilebilir", route: null },
-    { icon: "cube-outline" as const, title: "Kargo ve teslimatlar", subtitle: `${deliveries.filter(item => item.status === "waiting").length} bekleyen kargo`, route: "/(app)/kargolar" as const },
+    { icon: "cube-outline" as const, title: "Kargo ve teslimatlar", subtitle: `${deliveries.filter(item => item.status === "waiting").length} bekleyen kargo`, route: "/kargolar" as const },
     { icon: "people-outline" as const, title: "Daireler ve sakinler", subtitle: `${membership.unit || "Yönetim görünümü"}`, route: null },
   ];
 
