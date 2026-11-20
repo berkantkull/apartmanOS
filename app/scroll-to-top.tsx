@@ -18,6 +18,7 @@ export default function ScrollToTop() {
       type="button"
       className={`scroll-to-top${visible ? " is-visible" : ""}`}
       aria-label="Sayfanın başına dön"
+      tabIndex={visible ? 0 : -1}
       title="Yukarı çık"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
     >

@@ -48,8 +48,10 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         {children}
-        <PwaManager />
-        <ScrollToTop />
+        <div className="floating-actions">
+          <ScrollToTop />
+          <PwaManager />
+        </div>
       </body>
     </html>
   );
